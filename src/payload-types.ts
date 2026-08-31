@@ -69,6 +69,11 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
+    properties: Property;
+    'team-members': TeamMember;
+    leads: Lead;
+    'credit-requests': CreditRequest;
+    viewings: Viewing;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -78,17 +83,26 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    properties: PropertiesSelect<false> | PropertiesSelect<true>;
+    'team-members': TeamMembersSelect<false> | TeamMembersSelect<true>;
+    leads: LeadsSelect<false> | LeadsSelect<true>;
+    'credit-requests': CreditRequestsSelect<false> | CreditRequestsSelect<true>;
+    viewings: ViewingsSelect<false> | ViewingsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
   };
   db: {
-    defaultIDType: string;
+    defaultIDType: number;
   };
   fallbackLocale: null;
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    'site-settings': SiteSetting;
+  };
+  globalsSelect: {
+    'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
+  };
   locale: null;
   widgets: {
     collections: CollectionsWidget;
@@ -122,7 +136,8 @@ export interface UserAuthOperations {
  * via the `definition` "users".
  */
 export interface User {
-  id: string;
+  id: number;
+  name?: string | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -147,7 +162,7 @@ export interface User {
  * via the `definition` "media".
  */
 export interface Media {
-  id: string;
+  id: number;
   alt: string;
   updatedAt: string;
   createdAt: string;
@@ -160,13 +175,139 @@ export interface Media {
   height?: number | null;
   focalX?: number | null;
   focalY?: number | null;
+  sizes?: {
+    card?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    thumbnail?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "properties".
+ */
+export interface Property {
+  id: number;
+  title: string;
+  /**
+   * Exemplu: vila-moderna-dumbravita
+   */
+  slug: string;
+  transaction: 'sale' | 'rent';
+  propertyType: 'apartment' | 'house' | 'penthouse' | 'land' | 'commercial';
+  status: 'available' | 'reserved' | 'sold';
+  price: number;
+  currency?: ('EUR' | 'RON') | null;
+  location: string;
+  shortDescription: string;
+  description: string;
+  area?: number | null;
+  landArea?: number | null;
+  rooms?: number | null;
+  bathrooms?: number | null;
+  floor?: string | null;
+  yearBuilt?: number | null;
+  energyClass?: string | null;
+  features?:
+    | {
+        feature: string;
+        id?: string | null;
+      }[]
+    | null;
+  images?: (number | Media)[] | null;
+  agent?: (number | null) | TeamMember;
+  featured?: boolean | null;
+  publishedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team-members".
+ */
+export interface TeamMember {
+  id: number;
+  name: string;
+  role: string;
+  photo?: (number | null) | Media;
+  phone?: string | null;
+  email?: string | null;
+  bio?: string | null;
+  order?: number | null;
+  active?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "leads".
+ */
+export interface Lead {
+  id: number;
+  name: string;
+  phone: string;
+  email?: string | null;
+  message: string;
+  property?: (number | null) | Property;
+  source?: ('contact' | 'property' | 'valuation') | null;
+  status?: ('new' | 'contacted' | 'closed') | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "credit-requests".
+ */
+export interface CreditRequest {
+  id: number;
+  name: string;
+  phone: string;
+  email?: string | null;
+  purpose: 'purchase' | 'refinance' | 'other';
+  requestedAmount: number;
+  downPayment?: number | null;
+  monthlyIncome?: number | null;
+  message?: string | null;
+  status?: ('new' | 'contacted' | 'review' | 'closed') | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "viewings".
+ */
+export interface Viewing {
+  id: number;
+  date: string;
+  time: '10:00' | '12:00' | '15:00' | '17:00';
+  propertyTitle: string;
+  property?: (number | null) | Property;
+  name: string;
+  phone: string;
+  email?: string | null;
+  note?: string | null;
+  status?: ('scheduled' | 'confirmed' | 'completed' | 'cancelled') | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
-  id: string;
+  id: number;
   key: string;
   data:
     | {
@@ -183,20 +324,40 @@ export interface PayloadKv {
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
-  id: string;
+  id: number;
   document?:
     | ({
         relationTo: 'users';
-        value: string | User;
+        value: number | User;
       } | null)
     | ({
         relationTo: 'media';
-        value: string | Media;
+        value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'properties';
+        value: number | Property;
+      } | null)
+    | ({
+        relationTo: 'team-members';
+        value: number | TeamMember;
+      } | null)
+    | ({
+        relationTo: 'leads';
+        value: number | Lead;
+      } | null)
+    | ({
+        relationTo: 'credit-requests';
+        value: number | CreditRequest;
+      } | null)
+    | ({
+        relationTo: 'viewings';
+        value: number | Viewing;
       } | null);
   globalSlug?: string | null;
   user: {
     relationTo: 'users';
-    value: string | User;
+    value: number | User;
   };
   updatedAt: string;
   createdAt: string;
@@ -206,10 +367,10 @@ export interface PayloadLockedDocument {
  * via the `definition` "payload-preferences".
  */
 export interface PayloadPreference {
-  id: string;
+  id: number;
   user: {
     relationTo: 'users';
-    value: string | User;
+    value: number | User;
   };
   key?: string | null;
   value?:
@@ -229,7 +390,7 @@ export interface PayloadPreference {
  * via the `definition` "payload-migrations".
  */
 export interface PayloadMigration {
-  id: string;
+  id: number;
   name?: string | null;
   batch?: number | null;
   updatedAt: string;
@@ -240,6 +401,7 @@ export interface PayloadMigration {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  name?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -274,6 +436,130 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+  sizes?:
+    | T
+    | {
+        card?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        thumbnail?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+      };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "properties_select".
+ */
+export interface PropertiesSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  transaction?: T;
+  propertyType?: T;
+  status?: T;
+  price?: T;
+  currency?: T;
+  location?: T;
+  shortDescription?: T;
+  description?: T;
+  area?: T;
+  landArea?: T;
+  rooms?: T;
+  bathrooms?: T;
+  floor?: T;
+  yearBuilt?: T;
+  energyClass?: T;
+  features?:
+    | T
+    | {
+        feature?: T;
+        id?: T;
+      };
+  images?: T;
+  agent?: T;
+  featured?: T;
+  publishedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team-members_select".
+ */
+export interface TeamMembersSelect<T extends boolean = true> {
+  name?: T;
+  role?: T;
+  photo?: T;
+  phone?: T;
+  email?: T;
+  bio?: T;
+  order?: T;
+  active?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "leads_select".
+ */
+export interface LeadsSelect<T extends boolean = true> {
+  name?: T;
+  phone?: T;
+  email?: T;
+  message?: T;
+  property?: T;
+  source?: T;
+  status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "credit-requests_select".
+ */
+export interface CreditRequestsSelect<T extends boolean = true> {
+  name?: T;
+  phone?: T;
+  email?: T;
+  purpose?: T;
+  requestedAmount?: T;
+  downPayment?: T;
+  monthlyIncome?: T;
+  message?: T;
+  status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "viewings_select".
+ */
+export interface ViewingsSelect<T extends boolean = true> {
+  date?: T;
+  time?: T;
+  propertyTitle?: T;
+  property?: T;
+  name?: T;
+  phone?: T;
+  email?: T;
+  note?: T;
+  status?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -314,6 +600,44 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings".
+ */
+export interface SiteSetting {
+  id: number;
+  agencyName?: string | null;
+  city?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  address?: string | null;
+  whatsapp?: string | null;
+  heroTitle?: string | null;
+  heroSubtitle?: string | null;
+  facebook?: string | null;
+  instagram?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings_select".
+ */
+export interface SiteSettingsSelect<T extends boolean = true> {
+  agencyName?: T;
+  city?: T;
+  phone?: T;
+  email?: T;
+  address?: T;
+  whatsapp?: T;
+  heroTitle?: T;
+  heroSubtitle?: T;
+  facebook?: T;
+  instagram?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

@@ -1,67 +1,92 @@
-# Payload Blank Template
+# LC Estate Partners
 
-This template comes configured with the bare minimum to get started on anything you need.
+Site complet pentru agenție imobiliară, cu interfață publică și panou de administrare în aceeași aplicație.
 
-## Quick start
+## Ce conține
 
-This template can be deployed directly from our Cloud hosting and it will setup MongoDB and cloud S3 object storage for media.
+- pagină principală responsive;
+- catalog de proprietăți cu filtre;
+- pagină individuală cu galerie, detalii, dotări și agent responsabil;
+- pagină de echipă;
+- contact și solicitare de evaluare;
+- pagină dedicată creditului, cu formular de analiză;
+- formulare salvate automat în baza de date;
+- programare automată a vizionărilor, cu intervale ocupate blocate;
+- CMS la `/admin` pentru proprietăți, media, echipă, solicitări, cereri de credit și setările agenției;
+- SQLite pentru instalarea simplă și migrații versionate;
+- Dockerfile și Docker Compose cu volum persistent.
 
-## Quick Start - local setup
+## Pornire locală
 
-To spin up this template locally, follow these steps:
+Cerințe: Node.js 20.9+ și npm.
 
-### Clone
+```bash
+cp .env.example .env
+npm install
+npm run migrate
+npm run seed
+npm run dev
+```
 
-After you click the `Deploy` button above, you'll want to have standalone copy of this repo on your machine. If you've already cloned this repo, skip to [Development](#development).
+Site-ul este disponibil la `http://localhost:3000`. La prima accesare a `http://localhost:3000/admin`, Payload cere crearea contului de administrator.
 
-### Development
+`npm run seed` încarcă echipa și proprietățile demo o singură dată. Dacă există deja cel puțin o proprietate, comanda se oprește fără să dubleze datele.
 
-1. First [clone the repo](#clone) if you have not done so already
-2. `cd my-project && cp .env.example .env` to copy the example environment variables. You'll need to add the `MONGODB_URL` from your Cloud project to your `.env` if you want to use S3 storage and the MongoDB database that was created for you.
+## Administrare
 
-3. `pnpm install && pnpm dev` to install dependencies and start the dev server
-4. open `http://localhost:3000` to open the app in your browser
+În `/admin`, clientul poate:
 
-That's it! Changes made in `./src` will be reflected in your app. Follow the on-screen instructions to login and create your first admin user. Then check out [Production](#production) once you're ready to build and serve your app, and [Deployment](#deployment) when you're ready to go live.
+- adăuga, modifica și arhiva proprietăți;
+- încărca și ordona fotografii;
+- alege proprietățile promovate pe home;
+- gestiona membrii echipei;
+- vedea solicitările venite din formulare și schimba statusul lor;
+- vedea și gestiona separat cererile de credit;
+- vedea, confirma, finaliza sau anula vizionările programate;
+- modifica numele agenției, telefonul, adresa, WhatsApp și textele hero.
 
-#### Docker (Optional)
+Datele demonstrative din cod sunt folosite doar dacă baza de date nu are încă proprietăți sau membri ai echipei. După popularea CMS-ului, site-ul citește exclusiv conținutul administrat.
 
-If you prefer to use Docker for local development instead of a local MongoDB instance, the provided docker-compose.yml file can be used.
+## Deploy cu Docker
 
-To do so, follow these steps:
+1. Generează un secret puternic și configurează `.env`:
 
-- Modify the `MONGODB_URL` in your `.env` file to `mongodb://127.0.0.1/<dbname>`
-- Modify the `docker-compose.yml` file's `MONGODB_URL` to match the above `<dbname>`
-- Run `docker-compose up` to start the database, optionally pass `-d` to run in the background.
+```env
+PAYLOAD_SECRET=un-secret-lung-si-aleatoriu
+NEXT_PUBLIC_SITE_URL=https://domeniul-tau.ro
+```
 
-## How it works
+2. Construiește și pornește aplicația:
 
-The Payload config is tailored specifically to the needs of most websites. It is pre-configured in the following ways:
+```bash
+docker compose up -d --build
+```
 
-### Collections
+3. Opțional, încarcă datele demo în volumul de producție:
 
-See the [Collections](https://payloadcms.com/docs/configuration/collections) docs for details on how to extend this functionality.
+```bash
+docker compose exec app npm run seed
+```
 
-- #### Users (Authentication)
+Containerul rulează automat migrațiile înainte să pornească serverul. Baza de date și fișierele încărcate sunt păstrate în volumul `lc_estate_data`, deci supraviețuiesc rebuild-urilor.
 
-  Users are auth-enabled collections that have access to the admin panel.
+Pentru un VPS, aplicația poate sta în spatele Caddy sau Nginx. Pentru Vercel ori alt hosting cu filesystem efemer, recomand mutarea bazei pe PostgreSQL și media pe S3/R2 înainte de lansare.
 
-  For additional help, see the official [Auth Example](https://github.com/payloadcms/payload/tree/3.x/examples/auth) or the [Authentication](https://payloadcms.com/docs/authentication/overview#authentication-overview) docs.
+## Comenzi utile
 
-- #### Media
+```bash
+npm run dev             # dezvoltare
+npm run build           # build de producție
+npm run start           # pornește build-ul
+npm run lint            # verificare cod
+npm run test:e2e        # teste în browser
+npm run generate:types  # regenerează tipurile după schimbarea CMS-ului
+npm run payload migrate:create # creează o migrare nouă
+```
 
-  This is the uploads enabled collection. It features pre-configured sizes, focal point and manual resizing to help you manage your pictures.
+## Înainte de publicare
 
-### Docker
+Confirmă datele de contact, textele, statisticile, fotografiile echipei și modelul politicii de confidențialitate înainte de publicare. Adaugă un serviciu de e-mail dacă vrei și notificări pe e-mail; solicitările sunt deja salvate în siguranță în CMS chiar fără acesta.
 
-Alternatively, you can use [Docker](https://www.docker.com) to spin up this template locally. To do so, follow these steps:
-
-1. Follow [steps 1 and 2 from above](#development), the docker-compose file will automatically use the `.env` file in your project root
-1. Next run `docker-compose up`
-1. Follow [steps 4 and 5 from above](#development) to login and create your first admin user
-
-That's it! The Docker instance will help you get up and running quickly while also standardizing the development environment across your teams.
-
-## Questions
-
-If you have any issues or questions, reach out to us on [Discord](https://discord.com/invite/payload) or start a [GitHub discussion](https://github.com/payloadcms/payload/discussions).
+Imaginea hero a fost generată special pentru acest proiect. Fotografiile demo ale proprietăților și echipei provin de pe Unsplash și trebuie înlocuite cu materialele reale ale agenției.
+# sitesebi
