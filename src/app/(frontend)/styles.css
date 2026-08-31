@@ -84,7 +84,6 @@ h1, h2 { font-family: var(--font-serif); font-weight: 500; letter-spacing: -.035
 .hero__actions { display: flex; align-items: center; gap: 30px; margin-top: 35px; }
 .hero-search-wrap { position: absolute; z-index: 5; bottom: -94px; left: 50%; transform: translateX(-50%); color: var(--ink); }
 .search-module { position: relative; border-radius: var(--radius-panel); background: var(--white); color: var(--ink); box-shadow: 0 24px 70px rgba(5,38,83,.15); }
-.search-module--hero { border-top: 3px solid var(--accent); }
 .search-module__topline { min-height: 76px; padding: 15px 22px 15px 25px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 25px; }
 .search-module__title { color: var(--forest); font-family: var(--font-serif); font-size: 27px; font-weight: 600; line-height: 1; }
 .transaction-switch { display: flex; padding: 4px; border-radius: 10px; background: var(--cream); }
