@@ -1,5 +1,5 @@
-# To use this Dockerfile, you have to set `output: 'standalone'` in your next.config.mjs file.
-# From https://github.com/vercel/next.js/blob/canary/examples/with-docker/Dockerfile
+# Docker deployment using the full Next.js runtime so the Payload migration CLI
+# remains available when the container starts.
 
 FROM node:22.17.0-alpine AS base
 
