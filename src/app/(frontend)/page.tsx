@@ -1,4 +1,4 @@
-import { ArrowRight, BadgeCheck, BarChart3, Building2, Home, KeyRound, Landmark, LandPlot, MessageSquareText, Search, ShieldCheck, Store } from 'lucide-react'
+import { ArrowRight, BadgeCheck, Building2, Home, KeyRound, Landmark, LandPlot, MessageCircle, MessageSquareText, Phone, Search, ShieldCheck, Store } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -19,7 +19,7 @@ export default async function HomePage() {
       <section className="hero">
         <Image className="hero__image" src="/images/hero-villa.webp" alt="Vilă contemporană într-o zonă verde" fill priority sizes="100vw" />
         <div className="hero__shade" />
-        <Header settings={settings} overlay />
+        <Header settings={settings} overlay current="/" />
         <div className="container hero__content">
           <span className="eyebrow eyebrow--light">Imobiliare în {settings.city} și împrejurimi</span>
           <h1>{settings.heroTitle}</h1>
@@ -61,7 +61,15 @@ export default async function HomePage() {
             <p className="consultant-role">{sebastian.role} · {settings.agencyName}</p>
             <p>{sebastian.bio}</p>
             <div className="consultant-services"><span>Cumpărare</span><span>Vânzare</span><span>Închiriere</span></div>
-            <Link className="button button--dark" href="/contact">Discută cu Sebastian</Link>
+            <div className="consultant-actions">
+              <Link className="button button--dark" href="/contact">Discută cu Sebastian <ArrowRight size={18} /></Link>
+              <a className="button button--outline" href={`tel:${(sebastian.phone || settings.phone || '').replace(/\s/g, '')}`}><Phone size={17} /> {sebastian.phone || settings.phone}</a>
+            </div>
+            <dl className="consultant-stats">
+              <div><dt>proprietăți tranzacționate</dt><dd>180+</dd></div>
+              <div><dt>clienți din recomandări</dt><dd>96%</dd></div>
+              <div><dt>evaluare medie clienți</dt><dd>4.9/5</dd></div>
+            </dl>
           </div>
         </div>
       </section>}
@@ -75,10 +83,10 @@ export default async function HomePage() {
             <Link className="text-link" href="/contact">Hai să discutăm <ArrowRight size={17} /></Link>
           </div>
           <div className="process-list">
-            <article><span>01</span><div><MessageSquareText /><h3>Înțelegem ce contează</h3><p>Buget, zonă, ritm de viață și lucrurile la care nu vrei să renunți.</p></div></article>
-            <article><span>02</span><div><Search /><h3>Selectăm, nu doar căutăm</h3><p>Primești o listă scurtă de opțiuni relevante, cu informațiile esențiale verificate.</p></div></article>
-            <article><span>03</span><div><ShieldCheck /><h3>Negociem și verificăm</h3><p>Te ajutăm cu oferta, documentele și fiecare detaliu până la tranzacție.</p></div></article>
-            <article><span>04</span><div><KeyRound /><h3>Rămânem aproape</h3><p>Predarea cheilor nu încheie relația. Suntem aici și după mutare.</p></div></article>
+            <article><MessageSquareText /><span>01</span><h3>Înțelegem ce contează</h3><p>Buget, zonă, ritm de viață și lucrurile la care nu vrei să renunți.</p></article>
+            <article><Search /><span>02</span><h3>Selectăm, nu doar căutăm</h3><p>Primești o listă scurtă de opțiuni relevante, cu informațiile esențiale verificate.</p></article>
+            <article><ShieldCheck /><span>03</span><h3>Negociem și verificăm</h3><p>Te ajutăm cu oferta, documentele și fiecare detaliu până la tranzacție.</p></article>
+            <article><KeyRound /><span>04</span><h3>Rămânem aproape</h3><p>Predarea cheilor nu încheie relația. Suntem aici și după mutare.</p></article>
           </div>
         </div>
       </section>
@@ -98,19 +106,18 @@ export default async function HomePage() {
         </Link>
       </section>
 
-      <section className="stats-strip">
-        <div className="container stats-grid">
-          <div><Home /><strong>180+</strong><span>proprietăți tranzacționate</span></div>
-          <div><BarChart3 /><strong>96%</strong><span>clienți din recomandări</span></div>
-          <div><MessageSquareText /><strong>4.9/5</strong><span>evaluare medie clienți</span></div>
-        </div>
-      </section>
-
       <section className="section cta-section">
         <div className="container cta-panel">
-          <span className="eyebrow eyebrow--light">Începem cu o conversație</span>
-          <h2>Spune-ne ce cauți.<br />Noi știm de unde să începem.</h2>
-          <div><Link className="button button--light" href="/contact">Programează o discuție <ArrowRight size={18} /></Link><a className="cta-phone" href={`tel:${(settings.phone || '').replace(/\s/g, '')}`}>{settings.phone}</a></div>
+          <div>
+            <span className="eyebrow eyebrow--light">Începem cu o conversație</span>
+            <h2>Spune-ne ce cauți. Noi știm de unde să începem.</h2>
+            <p>Răspundem de regulă în aceeași zi lucrătoare, fără obligații și fără presiune.</p>
+          </div>
+          <div className="cta-panel__actions">
+            <Link className="button button--light" href="/contact">Programează o discuție <ArrowRight size={18} /></Link>
+            <a className="cta-option" href={`tel:${(settings.phone || '').replace(/\s/g, '')}`}><Phone size={18} /><span><small>Sună-ne</small>{settings.phone}</span></a>
+            {settings.whatsapp && <a className="cta-option" href={`https://wa.me/${settings.whatsapp}`} target="_blank" rel="noreferrer"><MessageCircle size={18} /><span><small>WhatsApp</small>Scrie-ne un mesaj</span></a>}
+          </div>
         </div>
       </section>
       <Footer settings={settings} />

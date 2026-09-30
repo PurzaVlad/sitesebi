@@ -1,4 +1,4 @@
-import { ArrowRight, Mail, Phone, Quote } from 'lucide-react'
+import { ArrowRight, Mail, Phone } from 'lucide-react'
 import Link from 'next/link'
 
 import { AgentPhoto } from '@/components/AgentPhoto'
@@ -13,11 +13,11 @@ export default async function TeamPage() {
 
   return (
     <>
-      <Header settings={settings} />
+      <Header settings={settings} current="/echipa" />
       <section className="page-hero page-hero--team">
         <div className="container team-hero-grid">
           <div><span className="eyebrow">Oameni, nu agenți de vânzări</span><h1>De partea ta,<br />de la început.</h1></div>
-          <div><p>Suntem o echipă mică intenționat. Asta înseamnă atenție reală, răspunsuri rapide și un consultant care îți cunoaște povestea.</p><Quote size={42} /></div>
+          <div><p>Suntem o echipă mică intenționat. Asta înseamnă atenție reală, răspunsuri rapide și un consultant care îți cunoaște povestea.</p></div>
         </div>
       </section>
       <section className="section team-section">

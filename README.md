@@ -83,11 +83,12 @@ CMS-ul necesită o bază de date persistentă externă; `file:./.db` funcționea
 - `PAYLOAD_SECRET`: un secret lung, aleatoriu, nenul, păstrat stabil între deploy-uri;
 - `DATABASE_URL`: URL-ul bazei Turso, în format `libsql://...`;
 - `DATABASE_AUTH_TOKEN`: tokenul bazei Turso;
-- `NEXT_PUBLIC_SITE_URL`: `https://sitesebi-mocha.vercel.app` sau domeniul final.
+- `NEXT_PUBLIC_SITE_URL`: `https://sitesebi-mocha.vercel.app` sau domeniul final;
+- `BLOB_READ_WRITE_TOKEN`: adăugat automat când conectezi un Blob store (vezi mai jos).
 
 După salvarea variabilelor, rulează un nou deploy. Migrațiile versionate se aplică automat la inițializarea CMS-ului pe Vercel. Prima accesare a `/admin` permite crearea contului de administrator. Baza locală `.db` și fișierul `.env` nu sunt publicate prin Git.
 
-Încărcarea fotografiilor prin CMS necesită suplimentar stocare externă (Vercel Blob sau S3/R2); configurația media actuală folosește directorul local și este potrivită pentru dezvoltare sau Docker cu volum persistent.
+Pentru încărcarea fotografiilor din CMS pe Vercel: Vercel → Storage → Create → Blob, apoi conectează store-ul la proiect. Vercel adaugă automat `BLOB_READ_WRITE_TOKEN`, iar aplicația salvează fișierele în Blob. Fără acest token, fișierele se salvează în directorul local, potrivit pentru dezvoltare sau Docker cu volum persistent.
 
 ## Comenzi utile
 

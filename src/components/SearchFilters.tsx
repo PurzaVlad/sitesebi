@@ -10,6 +10,7 @@ type FilterValues = {
   zona?: string
   pret?: string
   pretMin?: string
+  sort?: string
 }
 
 type Option = { value: string; label: string; detail?: string }
@@ -142,6 +143,7 @@ export function SearchFilters({ variant, initial = {} }: { variant: 'hero' | 'ca
           <input type="hidden" name="tranzactie" value={transaction} />
         </div>
       </div>
+      {initial.sort && <input type="hidden" name="sort" value={initial.sort} />}
       <div className="search-module__fields">
         <CustomDropdown icon={Building2} label="Tipul spațiului" name="tip" options={propertyTypes} value={type} onChange={setType} />
         <CustomDropdown icon={MapPinned} label="Unde te vezi?" name="zona" options={locations} value={location} onChange={setLocation} />

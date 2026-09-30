@@ -1,7 +1,7 @@
 import { Bath, BedDouble, LandPlot, MapPin, Maximize2, PanelsTopLeft } from 'lucide-react'
 import Image from 'next/image'
 
-import { formatPrice, type Listing, typeLabels } from '@/lib/site-data'
+import { formatPrice, formatPricePerArea, type Listing, typeLabels } from '@/lib/site-data'
 
 export function PropertySummary({ property }: { property: Listing }) {
   return (
@@ -18,7 +18,7 @@ export function PropertySummary({ property }: { property: Listing }) {
             </div>
             <h1>{property.title}</h1>
           </div>
-          <strong className="property-summary__price">{formatPrice(property)}</strong>
+          <div className="property-summary__price"><strong>{formatPrice(property)}</strong>{formatPricePerArea(property) && <small>{formatPricePerArea(property)}</small>}</div>
         </div>
         <p className="property-summary__location"><MapPin size={17} />{property.location}</p>
         <p className="property-summary__id">ID: LC-{String(Math.abs(property.id)).padStart(4, '0')}</p>

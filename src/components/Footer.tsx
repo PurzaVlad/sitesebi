@@ -1,4 +1,4 @@
-import { ArrowUpRight, Camera, Mail, MapPin, Phone } from 'lucide-react'
+import { ArrowUpRight, Camera, Mail, MapPin, MessageCircle, Phone } from 'lucide-react'
 import Link from 'next/link'
 
 import type { SiteSetting } from '@/payload-types'
@@ -23,6 +23,7 @@ export function Footer({ settings }: { settings: SiteSetting }) {
         <div>
           <h3>Contact</h3>
           <a href={`tel:${(settings.phone || '').replace(/\s/g, '')}`}><Phone size={15} />{settings.phone}</a>
+          {settings.whatsapp && <a href={`https://wa.me/${settings.whatsapp}`} target="_blank" rel="noreferrer"><MessageCircle size={15} />WhatsApp</a>}
           <a href={`mailto:${settings.email}`}><Mail size={15} />{settings.email}</a>
           <span><MapPin size={15} />{settings.address}</span>
         </div>

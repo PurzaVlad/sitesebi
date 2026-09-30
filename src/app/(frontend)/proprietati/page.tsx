@@ -1,14 +1,16 @@
 import { Search } from 'lucide-react'
+import Link from 'next/link'
 
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { PropertyCard } from '@/components/PropertyCard'
 import { SearchFilters } from '@/components/SearchFilters'
+import { SortSelect } from '@/components/SortSelect'
 import { getListings, getSettings } from '@/lib/site-data'
 
 export const metadata = { title: 'Proprietăți' }
 
-type SearchParams = Promise<{ tranzactie?: string; tip?: string; zona?: string; pret?: string; pretMin?: string }>
+type SearchParams = Promise<{ tranzactie?: string; tip?: string; zona?: string; pret?: string; pretMin?: string; sort?: string }>
 
 export default async function PropertiesPage({ searchParams }: { searchParams: SearchParams }) {
   const params = await searchParams
@@ -24,18 +26,21 @@ export default async function PropertiesPage({ searchParams }: { searchParams: S
     (!zone || property.location.toLocaleLowerCase('ro').includes(zone)) &&
     property.price >= minPrice && property.price <= maxPrice,
   )
+  if (params.sort === 'pret-asc') filtered.sort((a, b) => a.price - b.price)
+  if (params.sort === 'pret-desc') filtered.sort((a, b) => b.price - a.price)
+  if (params.sort === 'suprafata') filtered.sort((a, b) => (b.area || 0) - (a.area || 0))
 
   return (
     <>
-      <Header settings={settings} />
+      <Header settings={settings} current={`/proprietati?tranzactie=${transaction}`} />
       <section className="page-hero page-hero--properties">
         <div className="container"><span className="eyebrow">Portofoliu actual</span><h1>Proprietăți alese<br />cu discernământ.</h1><p>Explorează selecția, filtrează simplu și cere detaliile care contează.</p></div>
       </section>
       <section className="listing-section">
         <div className="container">
           <SearchFilters variant="catalog" initial={params} />
-          <div className="listing-results"><p><strong>{filtered.length}</strong> {filtered.length === 1 ? 'proprietate găsită' : 'proprietăți găsite'}</p></div>
-          {filtered.length ? <div className="property-grid property-grid--catalog">{filtered.map((property) => <PropertyCard property={property} key={property.id} />)}</div> : <div className="empty-state"><Search size={30} /><h2>N-am găsit o potrivire exactă.</h2><p>Încearcă să elimini un filtru sau spune-ne direct ce cauți.</p><a className="button button--dark" href="/contact">Trimite-ne cerințele</a></div>}
+          <div className="listing-results"><p><strong>{filtered.length}</strong> {filtered.length === 1 ? 'proprietate găsită' : 'proprietăți găsite'} {transaction === 'rent' ? 'de închiriat' : 'de vânzare'}</p>{filtered.length > 1 && <SortSelect params={params} />}</div>
+          {filtered.length ? <div className="property-grid property-grid--catalog">{filtered.map((property) => <PropertyCard property={property} key={property.id} />)}</div> : <div className="empty-state"><Search size={30} /><h2>N-am găsit o potrivire exactă.</h2><p>Încearcă să elimini un filtru sau spune-ne direct ce cauți. Multe proprietăți ajung la noi înainte să fie publicate.</p><div className="empty-state__actions"><Link className="button button--outline" href={`/proprietati?tranzactie=${transaction}`}>Șterge filtrele</Link><Link className="button button--dark" href="/contact">Trimite-ne cerințele</Link></div></div>}
         </div>
       </section>
       <Footer settings={settings} />

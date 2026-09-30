@@ -15,7 +15,7 @@ export default async function ContactPage({ searchParams }: { searchParams: Sear
 
   return (
     <>
-      <Header settings={settings} />
+      <Header settings={settings} current="/contact" />
       <section className="contact-page">
         <div className="container contact-grid">
           <div className="contact-copy">

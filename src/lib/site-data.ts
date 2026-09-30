@@ -1,7 +1,9 @@
 import { unstable_cache } from 'next/cache'
+import { draftMode } from 'next/headers'
 import { getPayload } from 'payload'
 
 import type { Media, Property, SiteSetting, TeamMember } from '@/payload-types'
+import { publishedOnly } from '@/collections/Properties'
 import config from '@/payload.config'
 import { adamProfile, agencyContact, sebastianProfile } from './agency'
 
@@ -189,19 +191,29 @@ export const getSettings = unstable_cache(async () => {
   }
 }, ['site-settings'], { revalidate: 60 })
 
-export const getListings = unstable_cache(async () => {
+async function loadListings(draft: boolean) {
   try {
     const payload = await getPayload({ config })
-    const result = await payload.find({ collection: 'properties', depth: 2, limit: 100, sort: '-publishedAt' })
+    const result = await payload.find({
+      collection: 'properties',
+      depth: 2,
+      limit: 100,
+      sort: '-publishedAt',
+      draft,
+      where: draft ? undefined : publishedOnly,
+    })
     return result.docs.length ? result.docs.map(mapProperty) : demoListings
   } catch {
     return demoListings
   }
-}, ['properties'], { revalidate: 30 })
+}
 
-export async function getListingBySlug(slug: string) {
-  const listings = await getListings()
-  return listings.find((property) => property.slug === slug) || null
+const getPublishedListings = unstable_cache(() => loadListings(false), ['properties'], { revalidate: 30 })
+
+// Draft mode is only enabled through /api/preview, which requires an admin session.
+export async function getListings() {
+  const { isEnabled } = await draftMode()
+  return isEnabled ? loadListings(true) : getPublishedListings()
 }
 
 export const getAgents = unstable_cache(async () => {
@@ -227,6 +239,22 @@ export function formatPrice(property: Pick<Listing, 'price' | 'currency' | 'tran
   const formatted = new Intl.NumberFormat('ro-RO').format(property.price)
   const suffix = property.transaction === 'rent' ? ' / lună' : ''
   return `${formatted} ${property.currency === 'RON' ? 'lei' : '€'}${suffix}`
+}
+
+export function formatPricePerArea(property: Pick<Listing, 'price' | 'currency' | 'transaction' | 'area'>) {
+  if (property.transaction !== 'sale' || !property.area) return null
+  const formatted = new Intl.NumberFormat('ro-RO').format(Math.round(property.price / property.area))
+  return `${formatted} ${property.currency === 'RON' ? 'lei' : '€'} / m²`
+}
+
+export function getSimilarListings(listings: Listing[], property: Listing, count = 3) {
+  const candidates = listings.filter((item) => item.id !== property.id && item.transaction === property.transaction)
+  // Same property type first, then the closest price.
+  return candidates
+    .sort((a, b) =>
+      Number(b.propertyType === property.propertyType) - Number(a.propertyType === property.propertyType) ||
+      Math.abs(a.price - property.price) - Math.abs(b.price - property.price))
+    .slice(0, count)
 }
 
 export const typeLabels: Record<Listing['propertyType'], string> = {

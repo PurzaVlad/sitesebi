@@ -13,7 +13,7 @@ export default async function CreditPage({ searchParams }: { searchParams: Searc
 
   return (
     <>
-      <Header settings={settings} />
+      <Header settings={settings} current="/credit" />
       <section className="contact-page credit-page">
         <div className="container contact-grid">
           <div className="contact-copy credit-copy">

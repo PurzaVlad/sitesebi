@@ -1,6 +1,13 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig, Where } from 'payload'
 
 const isAdmin = ({ req }: { req: { user?: unknown } }) => Boolean(req.user)
+
+// Listings saved before drafts existed have no status and count as published.
+export const publishedOnly: Where = {
+  or: [{ _status: { equals: 'published' } }, { _status: { exists: false } }],
+}
+
+const previewPath = (slug: string) => `/api/preview?slug=${encodeURIComponent(slug)}`
 
 export const Properties: CollectionConfig = {
   slug: 'properties',
@@ -12,9 +19,25 @@ export const Properties: CollectionConfig = {
     useAsTitle: 'title',
     defaultColumns: ['title', 'transaction', 'price', 'location', 'status'],
     group: 'Conținut',
+    // "Preview" opens the listing in draft mode; the preview route checks the admin session.
+    preview: (doc) => (doc?.slug ? previewPath(String(doc.slug)) : null),
+    livePreview: {
+      url: ({ data }) => (data?.slug ? previewPath(String(data.slug)) : ''),
+      breakpoints: [
+        { label: 'Mobil', name: 'mobile', width: 390, height: 844 },
+        { label: 'Tabletă', name: 'tablet', width: 820, height: 1180 },
+        { label: 'Desktop', name: 'desktop', width: 1440, height: 900 },
+      ],
+    },
+  },
+  versions: {
+    maxPerDoc: 20,
+    // Autosave keeps the live preview in sync while typing, without publishing.
+    drafts: { autosave: { interval: 800 } },
   },
   access: {
-    read: () => true,
+    // Visitors only see published listings; logged-in editors also see drafts.
+    read: ({ req }) => (req.user ? true : publishedOnly),
     create: isAdmin,
     update: isAdmin,
     delete: isAdmin,
