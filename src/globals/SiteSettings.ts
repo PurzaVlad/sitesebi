@@ -1,4 +1,5 @@
 import type { GlobalConfig } from 'payload'
+import { agencyContact } from '../lib/agency'
 
 const isAdmin = ({ req }: { req: { user?: unknown } }) => Boolean(req.user)
 
@@ -18,12 +19,12 @@ export const SiteSettings: GlobalConfig = {
     {
       type: 'row',
       fields: [
-        { name: 'phone', label: 'Telefon', type: 'text', defaultValue: '+40 723 000 000' },
-        { name: 'email', label: 'E-mail', type: 'email', defaultValue: 'contact@lcestatepartners.ro' },
+        { name: 'phone', label: 'Telefon', type: 'text', defaultValue: agencyContact.phone },
+        { name: 'email', label: 'E-mail', type: 'email', defaultValue: agencyContact.email },
       ],
     },
     { name: 'address', label: 'Adresă', type: 'text', defaultValue: 'Str. Eugeniu de Savoya 12, Timișoara' },
-    { name: 'whatsapp', label: 'Număr WhatsApp (format internațional)', type: 'text', defaultValue: '40723000000' },
+    { name: 'whatsapp', label: 'Număr WhatsApp (format internațional)', type: 'text', defaultValue: agencyContact.whatsapp },
     { name: 'heroTitle', label: 'Titlu principal', type: 'text', defaultValue: 'Locul potrivit se simte ca acasă.' },
     {
       name: 'heroSubtitle',

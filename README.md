@@ -47,7 +47,7 @@ Site-ul este disponibil la `http://localhost:3000`. La prima accesare a `http://
 
 Datele demonstrative din cod sunt folosite doar dacă baza de date nu are încă proprietăți sau membri ai echipei. După popularea CMS-ului, site-ul citește exclusiv conținutul administrat.
 
-Pentru o bază de date populată cu vechiul demo, `node --import=tsx scripts/update-sebastian.ts` înlocuiește profilul demonstrativ Andrei Mureșan cu Sebastian Hepes și încarcă fotografia furnizată. Relațiile existente cu proprietățile se păstrează. Comanda poate fi rulată repetat fără a dubla profilul sau fotografia și nu modifică ceilalți membri ai echipei. Telefonul și e-mailul lui Sebastian se completează ulterior în `/admin` → Echipă; datele agenției rămân în Setări site.
+Pentru o bază de date populată cu vechiul demo, `node --import=tsx scripts/update-sebastian.ts` configurează Sebastian Hepes și Adam Mihai, telefoanele lor și e-mailul comun `lc.estate.solution@gmail.com`. Încarcă fotografia furnizată a lui Sebastian, păstrează relațiile cu proprietățile și dezactivează profilul demonstrativ Vlad Stan după realocarea proprietăților lui către Adam. Nu dublează profilurile sau fotografia la rulări repetate și păstrează ceilalți membri ai echipei. Datele comune se actualizează și în Setări site. Pentru Adam, site-ul afișează inițialele până la încărcarea unei fotografii reale în CMS.
 
 ## Deploy cu Docker
 
@@ -72,7 +72,22 @@ docker compose exec app npm run seed
 
 Containerul rulează automat migrațiile înainte să pornească serverul. Baza de date și fișierele încărcate sunt păstrate în volumul `lc_estate_data`, deci supraviețuiesc rebuild-urilor.
 
-Pentru un VPS, aplicația poate sta în spatele Caddy sau Nginx. Pentru Vercel ori alt hosting cu filesystem efemer, recomand mutarea bazei pe PostgreSQL și media pe S3/R2 înainte de lansare.
+Pentru un VPS, aplicația poate sta în spatele Caddy sau Nginx.
+
+## Deploy pe Vercel
+
+CMS-ul necesită o bază de date persistentă externă; `file:./.db` funcționează local sau cu volumul Docker, nu pe Vercel. Adaptorul SQLite este configurat și pentru Turso.
+
+În Vercel → Project → Environment Variables, configurează pentru Production și Preview:
+
+- `PAYLOAD_SECRET`: un secret lung, aleatoriu, nenul, păstrat stabil între deploy-uri;
+- `DATABASE_URL`: URL-ul bazei Turso, în format `libsql://...`;
+- `DATABASE_AUTH_TOKEN`: tokenul bazei Turso;
+- `NEXT_PUBLIC_SITE_URL`: `https://sitesebi-mocha.vercel.app` sau domeniul final.
+
+După salvarea variabilelor, rulează un nou deploy. Migrațiile versionate se aplică automat la inițializarea CMS-ului pe Vercel. Prima accesare a `/admin` permite crearea contului de administrator. Baza locală `.db` și fișierul `.env` nu sunt publicate prin Git.
+
+Încărcarea fotografiilor prin CMS necesită suplimentar stocare externă (Vercel Blob sau S3/R2); configurația media actuală folosește directorul local și este potrivită pentru dezvoltare sau Docker cu volum persistent.
 
 ## Comenzi utile
 

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
 import { Footer } from '@/components/Footer'
+import { AgentPhoto } from '@/components/AgentPhoto'
 import { Header } from '@/components/Header'
 import { PropertySummary } from '@/components/PropertySummary'
 import { ViewingScheduler } from '@/components/ViewingScheduler'
@@ -67,7 +68,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ slug:
             </div>
             <aside className="agent-card">
               <span className="eyebrow">Programează o vizionare</span>
-              {agent && <div className="agent-card__person"><div className="agent-card__avatar"><Image src={agent.photoUrl} alt={agent.name} fill sizes="64px" /></div><div><strong>{agent.name}</strong><span>{agent.role}</span></div></div>}
+              {agent && <div className="agent-card__person"><AgentPhoto name={agent.name} src={agent.photoUrl} className="agent-card__avatar" sizes="64px" /><div><strong>{agent.name}</strong><span>{agent.role}</span></div></div>}
               <p>Îți răspundem la întrebări și stabilim o vizionare în ritmul tău.</p>
               <ViewingScheduler propertyId={property.id} propertyTitle={property.title} dates={viewingDates} />
               <a className="button button--dark" href={`tel:${(agent?.phone || settings.phone || '').replace(/\s/g, '')}`}>{agent?.phone || settings.phone}<Phone size={17} /></a>

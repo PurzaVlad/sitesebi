@@ -84,6 +84,11 @@ h1, h2, .property-card h3, .process-list h3, .values-list h3 { font-family: var(
 .facts-grid span { font-size: 12px; }
 .team-card__photo img { object-position: center 40%; filter: none; }
 .team-card__copy > span { font-size: 12px; }
+.agent-photo__placeholder { display: grid; place-items: center; width: 100%; height: 100%; color: var(--forest); background: var(--cream); font-weight: 600; }
+.team-card__photo .agent-photo__placeholder { font-size: clamp(72px, 12vw, 140px); }
+.team-card__copy > .team-card__contacts { flex-direction: column; gap: 12px; margin-top: 20px; }
+.team-card__contacts a { width: auto; height: auto; display: flex; align-items: center; gap: 10px; font-size: 14px; overflow-wrap: anywhere; }
+.team-card__contacts svg { flex: 0 0 auto; }
 .team-card--lead .team-card__copy { padding: 40px; }
 .team-card--lead .team-card__copy h2 { font-size: 34px; }
 

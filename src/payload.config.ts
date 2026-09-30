@@ -13,6 +13,7 @@ import { Properties } from './collections/Properties'
 import { TeamMembers } from './collections/TeamMembers'
 import { Viewings } from './collections/Viewings'
 import { SiteSettings } from './globals/SiteSettings'
+import { migrations } from './migrations'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -37,7 +38,10 @@ export default buildConfig({
   db: sqliteAdapter({
     client: {
       url: process.env.DATABASE_URL || '',
+      authToken: process.env.DATABASE_AUTH_TOKEN,
     },
+    // Serverless deployments have no startup process to run the migration CLI.
+    prodMigrations: process.env.VERCEL ? migrations : undefined,
   }),
   sharp,
   plugins: [],

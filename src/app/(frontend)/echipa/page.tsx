@@ -1,7 +1,7 @@
 import { ArrowRight, Mail, Phone, Quote } from 'lucide-react'
-import Image from 'next/image'
 import Link from 'next/link'
 
+import { AgentPhoto } from '@/components/AgentPhoto'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { getAgents, getSettings } from '@/lib/site-data'
@@ -22,10 +22,10 @@ export default async function TeamPage() {
       </section>
       <section className="section team-section">
         <div className="container team-grid">
-          {agents.map((agent, index) => (
-            <article className={`team-card${index === 0 ? ' team-card--lead' : ''}`} key={agent.id}>
-              <div className="team-card__photo"><Image src={agent.photoUrl} alt={agent.name} fill sizes={index === 0 ? '(max-width: 800px) 100vw, 48vw' : '(max-width: 800px) 100vw, 24vw'} /></div>
-              <div className="team-card__copy"><span>{agent.role}</span><h2>{agent.name}</h2><p>{agent.bio}</p><div>{agent.phone && <a href={`tel:${agent.phone.replace(/\s/g, '')}`} aria-label={`Sună-l pe ${agent.name}`}><Phone size={17} /></a>}{agent.email && <a href={`mailto:${agent.email}`} aria-label={`Trimite e-mail lui ${agent.name}`}><Mail size={17} /></a>}</div></div>
+          {agents.map((agent) => (
+            <article className="team-card" key={agent.id}>
+              <AgentPhoto name={agent.name} src={agent.photoUrl} className="team-card__photo" sizes="(max-width: 800px) 100vw, 48vw" />
+              <div className="team-card__copy"><span>{agent.role}</span><h2>{agent.name}</h2><p>{agent.bio}</p><div className="team-card__contacts">{agent.phone && <a href={`tel:${agent.phone.replace(/\s/g, '')}`}><Phone size={17} />{agent.phone}</a>}{agent.email && <a href={`mailto:${agent.email}`}><Mail size={17} />{agent.email}</a>}</div></div>
             </article>
           ))}
         </div>

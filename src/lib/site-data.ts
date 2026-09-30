@@ -3,6 +3,7 @@ import { getPayload } from 'payload'
 
 import type { Media, Property, SiteSetting, TeamMember } from '@/payload-types'
 import config from '@/payload.config'
+import { adamProfile, agencyContact, sebastianProfile } from './agency'
 
 export type Listing = Omit<Property, 'images' | 'agent'> & {
   cover: string
@@ -18,10 +19,8 @@ export const defaultSettings: SiteSetting = {
   id: 0,
   agencyName: 'LC Estate Partners',
   city: 'Timișoara',
-  phone: '+40 723 000 000',
-  email: 'contact@lcestatepartners.ro',
+  ...agencyContact,
   address: 'Str. Eugeniu de Savoya 12, Timișoara',
-  whatsapp: '40723000000',
   heroTitle: 'Locul potrivit se simte ca acasă.',
   heroSubtitle: 'Proprietăți atent selectate în Timișoara și împrejurimi, prezentate clar și fără presiune.',
 }
@@ -29,40 +28,15 @@ export const defaultSettings: SiteSetting = {
 export const demoAgents: Agent[] = [
   {
     id: -1,
-    name: 'Sebastian Hepes',
-    role: 'Consultant imobiliar',
-    phone: '',
-    email: '',
-    bio: 'Consultanță pentru cumpărare, vânzare și închiriere în Timișoara și împrejurimi. De la alegerea proprietății până la pregătirea tranzacției.',
-    order: 1,
-    active: true,
+    ...sebastianProfile,
     photoUrl: '/images/sebastian-hepes.png',
     createdAt: now,
     updatedAt: now,
   },
   {
     id: -2,
-    name: 'Mara Ionescu',
-    role: 'Consultant rezidențial',
-    phone: '+40 723 000 001',
-    email: 'mara@lcestatepartners.ro',
-    bio: 'Cunoaște cartierele Timișoarei în detaliu și transformă o listă de dorințe într-o selecție scurtă, relevantă.',
-    order: 2,
-    active: true,
-    photoUrl: '/images/agent-mara.jpg',
-    createdAt: now,
-    updatedAt: now,
-  },
-  {
-    id: -3,
-    name: 'Vlad Stan',
-    role: 'Consultant investiții',
-    phone: '+40 723 000 002',
-    email: 'vlad@lcestatepartners.ro',
-    bio: 'Analizează oportunități de investiție și randamente, cu recomandări argumentate și date ușor de înțeles.',
-    order: 3,
-    active: true,
-    photoUrl: '/images/agent-vlad.jpg',
+    ...adamProfile,
+    photoUrl: '',
     createdAt: now,
     updatedAt: now,
   },
@@ -148,7 +122,7 @@ export const demoListings: Listing[] = [
     updatedAt: now,
     cover: '/images/property-penthouse.jpg',
     gallery: ['/images/property-penthouse.jpg', '/images/property-apartment.jpg'],
-    agent: demoAgents[2],
+    agent: demoAgents[1],
   },
   {
     id: -4,
@@ -188,7 +162,7 @@ function mapAgent(agent: TeamMember): Agent {
   return {
     ...agent,
     // Keep the portrait's original framing; square CMS thumbnails can crop the face.
-    photoUrl: mediaUrl(agent.photo) || (agent.name === 'Sebastian Hepes' ? '/images/sebastian-hepes.png' : '/images/agent-andrei.jpg'),
+    photoUrl: mediaUrl(agent.photo) || (agent.name === 'Sebastian Hepes' ? '/images/sebastian-hepes.png' : ''),
   }
 }
 
