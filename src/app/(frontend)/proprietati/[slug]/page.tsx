@@ -6,8 +6,9 @@ import { notFound } from 'next/navigation'
 
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
+import { PropertySummary } from '@/components/PropertySummary'
 import { ViewingScheduler } from '@/components/ViewingScheduler'
-import { formatPrice, getListingBySlug, getSettings, typeLabels } from '@/lib/site-data'
+import { getListingBySlug, getSettings } from '@/lib/site-data'
 
 function getViewingDates() {
   const dates: { value: string; weekday: string; day: string; month: string }[] = []
@@ -44,13 +45,10 @@ export default async function PropertyPage({ params }: { params: Promise<{ slug:
   return (
     <>
       <Header settings={settings} />
+      <PropertySummary property={property} />
       <section className="property-detail">
         <div className="container">
           <Link className="back-link" href="/proprietati"><ArrowLeft size={17} /> Înapoi la proprietăți</Link>
-          <div className="property-detail__heading">
-            <div><div className="property-detail__tags"><span>{property.transaction === 'sale' ? 'De vânzare' : 'De închiriat'}</span><span>{typeLabels[property.propertyType]}</span></div><h1>{property.title}</h1><p>{property.location}</p></div>
-            <strong>{formatPrice(property)}</strong>
-          </div>
           <div className="gallery-grid">
             {property.gallery.slice(0, 3).map((image, index) => <div className={`gallery-grid__item gallery-grid__item--${index + 1}`} key={image}><Image src={image} fill alt={`${property.title} — imagine ${index + 1}`} priority={index === 0} sizes={index === 0 ? '(max-width: 800px) 100vw, 66vw' : '34vw'} /></div>)}
           </div>
@@ -69,7 +67,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ slug:
             </div>
             <aside className="agent-card">
               <span className="eyebrow">Programează o vizionare</span>
-              {agent && <div className="agent-card__person"><div className="agent-card__avatar">{agent.name.split(' ').map((word) => word[0]).slice(0, 2).join('')}</div><div><strong>{agent.name}</strong><span>{agent.role}</span></div></div>}
+              {agent && <div className="agent-card__person"><div className="agent-card__avatar"><Image src={agent.photoUrl} alt={agent.name} fill sizes="64px" /></div><div><strong>{agent.name}</strong><span>{agent.role}</span></div></div>}
               <p>Îți răspundem la întrebări și stabilim o vizionare în ritmul tău.</p>
               <ViewingScheduler propertyId={property.id} propertyTitle={property.title} dates={viewingDates} />
               <a className="button button--dark" href={`tel:${(agent?.phone || settings.phone || '').replace(/\s/g, '')}`}>{agent?.phone || settings.phone}<Phone size={17} /></a>

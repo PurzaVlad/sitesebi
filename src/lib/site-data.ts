@@ -7,7 +7,7 @@ import config from '@/payload.config'
 export type Listing = Omit<Property, 'images' | 'agent'> & {
   cover: string
   gallery: string[]
-  agent?: TeamMember | null
+  agent?: Agent | null
 }
 
 export type Agent = Omit<TeamMember, 'photo'> & { photoUrl: string }
@@ -29,14 +29,14 @@ export const defaultSettings: SiteSetting = {
 export const demoAgents: Agent[] = [
   {
     id: -1,
-    name: 'Andrei Mureșan',
-    role: 'Fondator & broker imobiliar',
-    phone: '+40 723 000 000',
-    email: 'andrei@lcestatepartners.ro',
-    bio: 'Coordonează strategia agenției și tranzacțiile rezidențiale premium. Crede în evaluări corecte și conversații directe.',
+    name: 'Sebastian Hepes',
+    role: 'Consultant imobiliar',
+    phone: '',
+    email: '',
+    bio: 'Consultanță pentru cumpărare, vânzare și închiriere în Timișoara și împrejurimi. De la alegerea proprietății până la pregătirea tranzacției.',
     order: 1,
     active: true,
-    photoUrl: '/images/agent-andrei.jpg',
+    photoUrl: '/images/sebastian-hepes.png',
     createdAt: now,
     updatedAt: now,
   },
@@ -184,6 +184,14 @@ function mediaUrl(value: number | Media | null | undefined, size?: 'card' | 'thu
   return (size && value.sizes?.[size]?.url) || value.url || null
 }
 
+function mapAgent(agent: TeamMember): Agent {
+  return {
+    ...agent,
+    // Keep the portrait's original framing; square CMS thumbnails can crop the face.
+    photoUrl: mediaUrl(agent.photo) || (agent.name === 'Sebastian Hepes' ? '/images/sebastian-hepes.png' : '/images/agent-andrei.jpg'),
+  }
+}
+
 function mapProperty(property: Property): Listing {
   const gallery = (property.images || [])
     .map((image) => mediaUrl(image))
@@ -193,7 +201,7 @@ function mapProperty(property: Property): Listing {
     ...property,
     cover: (property.images || []).map((image) => mediaUrl(image, 'card')).find(Boolean) || gallery[0] || '/images/property-villa.jpg',
     gallery: gallery.length ? gallery : ['/images/property-villa.jpg'],
-    agent: typeof property.agent === 'object' ? property.agent : null,
+    agent: property.agent && typeof property.agent === 'object' ? mapAgent(property.agent) : null,
   }
 }
 
@@ -235,10 +243,7 @@ export const getAgents = unstable_cache(async () => {
 
     if (!result.docs.length) return demoAgents
 
-    return result.docs.map((agent) => ({
-      ...agent,
-      photoUrl: mediaUrl(agent.photo, 'thumbnail') || '/images/agent-andrei.jpg',
-    }))
+    return result.docs.map(mapAgent)
   } catch {
     return demoAgents
   }

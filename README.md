@@ -47,6 +47,8 @@ Site-ul este disponibil la `http://localhost:3000`. La prima accesare a `http://
 
 Datele demonstrative din cod sunt folosite doar dacă baza de date nu are încă proprietăți sau membri ai echipei. După popularea CMS-ului, site-ul citește exclusiv conținutul administrat.
 
+Pentru o bază de date populată cu vechiul demo, `node --import=tsx scripts/update-sebastian.ts` înlocuiește profilul demonstrativ Andrei Mureșan cu Sebastian Hepes și încarcă fotografia furnizată. Relațiile existente cu proprietățile se păstrează. Comanda poate fi rulată repetat fără a dubla profilul sau fotografia și nu modifică ceilalți membri ai echipei. Telefonul și e-mailul lui Sebastian se completează ulterior în `/admin` → Echipă; datele agenției rămân în Setări site.
+
 ## Deploy cu Docker
 
 1. Generează un secret puternic și configurează `.env`:
@@ -88,5 +90,5 @@ npm run payload migrate:create # creează o migrare nouă
 
 Confirmă datele de contact, textele, statisticile, fotografiile echipei și modelul politicii de confidențialitate înainte de publicare. Adaugă un serviciu de e-mail dacă vrei și notificări pe e-mail; solicitările sunt deja salvate în siguranță în CMS chiar fără acesta.
 
-Imaginea hero a fost generată special pentru acest proiect. Fotografiile demo ale proprietăților și echipei provin de pe Unsplash și trebuie înlocuite cu materialele reale ale agenției.
+Imaginea hero a fost generată special pentru acest proiect. Fotografia lui Sebastian Hepes este furnizată de client. Celelalte fotografii demo ale proprietăților și echipei provin de pe Unsplash și trebuie înlocuite cu materialele reale ale agenției.
 # sitesebi

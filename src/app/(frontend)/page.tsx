@@ -1,4 +1,4 @@
-import { ArrowRight, BadgeCheck, BarChart3, Home, KeyRound, Landmark, MessageSquareText, Search, ShieldCheck } from 'lucide-react'
+import { ArrowRight, BadgeCheck, BarChart3, Building2, Home, KeyRound, Landmark, LandPlot, MessageSquareText, Search, ShieldCheck, Store } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -6,10 +6,11 @@ import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { PropertyCard } from '@/components/PropertyCard'
 import { SearchFilters } from '@/components/SearchFilters'
-import { getListings, getSettings } from '@/lib/site-data'
+import { getAgents, getListings, getSettings } from '@/lib/site-data'
 
 export default async function HomePage() {
-  const [settings, listings] = await Promise.all([getSettings(), getListings()])
+  const [settings, listings, agents] = await Promise.all([getSettings(), getListings(), getAgents()])
+  const sebastian = agents.find((agent) => agent.name === 'Sebastian Hepes')
   const featured = listings.filter((property) => property.featured).slice(0, 3)
   const visibleListings = featured.length === 3 ? featured : listings.slice(0, 3)
 
@@ -20,6 +21,7 @@ export default async function HomePage() {
         <div className="hero__shade" />
         <Header settings={settings} overlay />
         <div className="container hero__content">
+          <span className="eyebrow eyebrow--light">Imobiliare în {settings.city} și împrejurimi</span>
           <h1>{settings.heroTitle}</h1>
           <p>{settings.heroSubtitle}</p>
           <div className="hero__actions">
@@ -28,7 +30,16 @@ export default async function HomePage() {
           </div>
         </div>
         <div className="hero-search-wrap container"><SearchFilters variant="hero" /></div>
+        <nav className="container property-types" aria-label="Caută după tipul proprietății">
+          <Link href="/proprietati?tip=apartment"><Building2 /><span>Apartamente</span></Link>
+          <Link href="/proprietati?tip=house"><Home /><span>Case / Vile</span></Link>
+          <Link href="/proprietati?tip=penthouse"><Building2 /><span>Penthouse-uri</span></Link>
+          <Link href="/proprietati?tip=land"><LandPlot /><span>Terenuri</span></Link>
+          <Link href="/proprietati?tip=commercial"><Store /><span>Spații comerciale</span></Link>
+        </nav>
       </section>
+
+
 
       <section className="section section--cream">
         <div className="container section-heading section-heading--split">
@@ -40,6 +51,20 @@ export default async function HomePage() {
         </div>
         <div className="container section-action"><Link className="button button--outline" href="/proprietati">Vezi toate proprietățile <ArrowRight size={18} /></Link></div>
       </section>
+
+      {sebastian && <section className="section consultant-section">
+        <div className="container consultant-grid">
+          <div className="consultant-photo"><Image src={sebastian.photoUrl} alt="Sebastian Hepes, consultant imobiliar" fill sizes="(max-width: 800px) 100vw, 42vw" /></div>
+          <div className="consultant-copy">
+            <span className="eyebrow">Consultantul tău imobiliar</span>
+            <h2>Sebastian Hepes</h2>
+            <p className="consultant-role">{sebastian.role} · {settings.agencyName}</p>
+            <p>{sebastian.bio}</p>
+            <div className="consultant-services"><span>Cumpărare</span><span>Vânzare</span><span>Închiriere</span></div>
+            <Link className="button button--dark" href="/contact">Discută cu Sebastian</Link>
+          </div>
+        </div>
+      </section>}
 
       <section className="section process-section" id="servicii">
         <div className="container process-grid">

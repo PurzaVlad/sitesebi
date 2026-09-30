@@ -1,9 +1,9 @@
-import { Cormorant_Garamond, DM_Sans } from 'next/font/google'
+import { DM_Sans } from 'next/font/google'
 import React from 'react'
 import './styles.css'
+import './westhub.css'
 
 const sans = DM_Sans({ subsets: ['latin', 'latin-ext'], variable: '--font-sans' })
-const serif = Cormorant_Garamond({ subsets: ['latin', 'latin-ext'], variable: '--font-serif', weight: ['500', '600'] })
 
 export const metadata = {
   description: 'Proprietăți atent selectate în Timișoara și împrejurimi. Consultanță imobiliară clară, de la prima vizionare până la chei.',
@@ -15,7 +15,7 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
 
   return (
     <html lang="ro" data-scroll-behavior="smooth">
-      <body className={`${sans.variable} ${serif.variable}`}>
+      <body className={sans.variable}>
         <main>{children}</main>
       </body>
     </html>

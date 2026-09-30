@@ -27,14 +27,14 @@ const [villa, apartment, penthouse, house, andreiPhoto, maraPhoto, vladPhoto] = 
   upload('property-apartment.jpg', 'Interior apartament luminos'),
   upload('property-penthouse.jpg', 'Interior penthouse modern'),
   upload('property-house.jpg', 'Casă modernă de închiriat'),
-  upload('agent-andrei.jpg', 'Andrei Mureșan'),
+  upload('sebastian-hepes.png', 'Sebastian Hepes'),
   upload('agent-mara.jpg', 'Mara Ionescu'),
   upload('agent-vlad.jpg', 'Vlad Stan'),
 ])
 
 payload.logger.info('Creez echipa demo...')
 const [andrei, mara, vlad] = await Promise.all([
-  payload.create({ collection: 'team-members', data: { name: 'Andrei Mureșan', role: 'Fondator & broker imobiliar', phone: '+40 723 000 000', email: 'andrei@lcestatepartners.ro', bio: 'Coordonează strategia agenției și tranzacțiile rezidențiale premium. Crede în evaluări corecte și conversații directe.', photo: andreiPhoto.id, order: 1, active: true } }),
+  payload.create({ collection: 'team-members', data: { name: 'Sebastian Hepes', role: 'Consultant imobiliar', bio: 'Consultanță pentru cumpărare, vânzare și închiriere în Timișoara și împrejurimi. De la alegerea proprietății până la pregătirea tranzacției.', photo: andreiPhoto.id, order: 1, active: true } }),
   payload.create({ collection: 'team-members', data: { name: 'Mara Ionescu', role: 'Consultant rezidențial', phone: '+40 723 000 001', email: 'mara@lcestatepartners.ro', bio: 'Cunoaște cartierele Timișoarei în detaliu și transformă o listă de dorințe într-o selecție scurtă, relevantă.', photo: maraPhoto.id, order: 2, active: true } }),
   payload.create({ collection: 'team-members', data: { name: 'Vlad Stan', role: 'Consultant investiții', phone: '+40 723 000 002', email: 'vlad@lcestatepartners.ro', bio: 'Analizează oportunități de investiție și randamente, cu recomandări argumentate și date ușor de înțeles.', photo: vladPhoto.id, order: 3, active: true } }),
 ])

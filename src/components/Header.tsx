@@ -5,7 +5,9 @@ import type { SiteSetting } from '@/payload-types'
 import { Logo } from './Logo'
 
 const links = [
-  { href: '/proprietati', label: 'Proprietăți' },
+  { href: '/', label: 'Acasă' },
+  { href: '/proprietati?tranzactie=sale', label: 'Cumpără' },
+  { href: '/proprietati?tranzactie=rent', label: 'Închiriază' },
   { href: '/credit', label: 'Credit' },
   { href: '/echipa', label: 'Echipa' },
   { href: '/contact', label: 'Contact' },

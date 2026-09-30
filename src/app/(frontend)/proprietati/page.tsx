@@ -8,19 +8,21 @@ import { getListings, getSettings } from '@/lib/site-data'
 
 export const metadata = { title: 'Proprietăți' }
 
-type SearchParams = Promise<{ tranzactie?: string; tip?: string; zona?: string; pret?: string }>
+type SearchParams = Promise<{ tranzactie?: string; tip?: string; zona?: string; pret?: string; pretMin?: string }>
 
 export default async function PropertiesPage({ searchParams }: { searchParams: SearchParams }) {
   const params = await searchParams
   const [settings, listings] = await Promise.all([getSettings(), getListings()])
   const zone = (params.zona || '').toLocaleLowerCase('ro')
-  const maxPrice = Number(params.pret) || Infinity
+  const parsedMax = Number(params.pret)
+  const maxPrice = params.pret && Number.isFinite(parsedMax) && parsedMax >= 0 ? parsedMax : Infinity
+  const minPrice = Math.max(0, Number(params.pretMin) || 0)
   const transaction = params.tranzactie || 'sale'
   const filtered = listings.filter((property) =>
     property.transaction === transaction &&
     (!params.tip || property.propertyType === params.tip) &&
     (!zone || property.location.toLocaleLowerCase('ro').includes(zone)) &&
-    property.price <= maxPrice,
+    property.price >= minPrice && property.price <= maxPrice,
   )
 
   return (

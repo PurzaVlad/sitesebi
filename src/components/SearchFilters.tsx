@@ -1,16 +1,24 @@
 'use client'
 
-import { Building2, Check, ChevronDown, MapPinned, Search, WalletCards, X } from 'lucide-react'
+import { Building2, Check, ChevronDown, MapPinned, Search, X } from 'lucide-react'
 import { useEffect, useId, useRef, useState } from 'react'
+import { BudgetFilter } from './BudgetFilter'
 
 type FilterValues = {
   tranzactie?: string
   tip?: string
   zona?: string
   pret?: string
+  pretMin?: string
 }
 
 type Option = { value: string; label: string; detail?: string }
+
+function validPrice(value?: string) {
+  if (!value) return ''
+  const parsed = Number(value)
+  return Number.isFinite(parsed) && parsed >= 0 ? String(parsed) : ''
+}
 
 const propertyTypes: Option[] = [
   { value: '', label: 'Orice proprietate', detail: 'Arată-mi toate opțiunile' },
@@ -28,14 +36,6 @@ const locations: Option[] = [
   { value: 'Giroc', label: 'Giroc', detail: 'Sudul orașului' },
   { value: 'Ghiroda', label: 'Ghiroda', detail: 'Estul orașului' },
   { value: 'Moșnița Nouă', label: 'Moșnița Nouă', detail: 'Est metropolitan' },
-]
-
-const budgets: Option[] = [
-  { value: '', label: 'Buget flexibil', detail: 'Fără limită de preț' },
-  { value: '100000', label: 'Până la 100.000 €' },
-  { value: '200000', label: 'Până la 200.000 €' },
-  { value: '300000', label: 'Până la 300.000 €' },
-  { value: '500000', label: 'Până la 500.000 €' },
 ]
 
 function CustomDropdown({
@@ -113,14 +113,23 @@ export function SearchFilters({ variant, initial = {} }: { variant: 'hero' | 'ca
   const [transaction, setTransaction] = useState(initial.tranzactie || 'sale')
   const [type, setType] = useState(initial.tip || '')
   const [location, setLocation] = useState(initial.zona || '')
-  const [budget, setBudget] = useState(initial.pret || '')
-  const hasFilters = Boolean(type || location || budget || transaction !== 'sale')
+  const [budget, setBudget] = useState(validPrice(initial.pret))
+  const [minimumBudget, setMinimumBudget] = useState(validPrice(initial.pretMin))
+  const hasFilters = Boolean(type || location || budget || minimumBudget || transaction !== 'sale')
+
+  const changeTransaction = (value: string) => {
+    if (value === transaction) return
+    setTransaction(value)
+    setBudget('')
+    setMinimumBudget('')
+  }
 
   const reset = () => {
     setTransaction('sale')
     setType('')
     setLocation('')
     setBudget('')
+    setMinimumBudget('')
   }
 
   return (
@@ -128,15 +137,15 @@ export function SearchFilters({ variant, initial = {} }: { variant: 'hero' | 'ca
       <div className="search-module__topline">
         <strong className="search-module__title">Căutare personalizată</strong>
         <div className="transaction-switch" aria-label="Tip tranzacție">
-          <button className={transaction === 'sale' ? 'is-active' : ''} type="button" onClick={() => setTransaction('sale')}>Cumpăr</button>
-          <button className={transaction === 'rent' ? 'is-active' : ''} type="button" onClick={() => setTransaction('rent')}>Închiriez</button>
+          <button className={transaction === 'sale' ? 'is-active' : ''} type="button" onClick={() => changeTransaction('sale')}>Cumpăr</button>
+          <button className={transaction === 'rent' ? 'is-active' : ''} type="button" onClick={() => changeTransaction('rent')}>Închiriez</button>
           <input type="hidden" name="tranzactie" value={transaction} />
         </div>
       </div>
       <div className="search-module__fields">
         <CustomDropdown icon={Building2} label="Tipul spațiului" name="tip" options={propertyTypes} value={type} onChange={setType} />
         <CustomDropdown icon={MapPinned} label="Unde te vezi?" name="zona" options={locations} value={location} onChange={setLocation} />
-        <CustomDropdown icon={WalletCards} label="Buget orientativ" name="pret" options={budgets} value={budget} onChange={setBudget} />
+        <BudgetFilter transaction={transaction} minimum={minimumBudget} maximum={budget} onChange={(minimum, maximum) => { setMinimumBudget(minimum); setBudget(maximum) }} />
         <button className="search-submit" type="submit"><span>{variant === 'hero' ? 'Arată-mi opțiunile' : 'Aplică filtrele'}</span><Search size={19} /></button>
       </div>
       {variant === 'catalog' && hasFilters && <button className="search-reset" type="button" onClick={reset}><X size={14} /> Resetează</button>}
