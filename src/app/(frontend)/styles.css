@@ -449,7 +449,7 @@ h3 { letter-spacing: -.01em; line-height: 1.3; }
 .team-card__copy { padding: 25px 2px 15px; padding-top: 22px; }
 .team-card__copy > .team-card__contacts { margin-top: 20px; flex-direction: row; flex-wrap: wrap; gap: 10px; }
 .team-card__contacts a { width: auto; height: auto; display: flex; align-items: center; gap: 10px; font-size: 14px; overflow-wrap: anywhere; padding: 10px 16px; border: 1px solid var(--line) !important; border-radius: 999px !important; }
-.team-card__contacts a:hover { border-color: var(--forest) !important; color: var(--forest) !important; }
+.team-card__contacts a:hover { border-color: var(--forest) !important; background: var(--forest); color: #fff !important; }
 
 /* Contact & credit forms */
 .contact-page { padding: 90px 0 110px; background: var(--cream); }
