@@ -15,7 +15,7 @@ try {
   }
 
   const photo = await uploadPhoto('sebastian-hepes.jpg', 'Sebastian Hepes, consultant imobiliar')
-  const adamPhoto = await uploadPhoto('adam-mihai.jpg', 'Adam Mihai, consultant imobiliar')
+  const adamPhoto = await uploadPhoto('adam-mihai-portrait.jpg', 'Adam Mihai, consultant imobiliar')
 
   async function updateProfile(profile: typeof sebastianProfile, demoName: string, demoEmail: string, photoID?: number) {
     const existing = await payload.find({ collection: 'team-members', where: { name: { equals: profile.name } }, limit: 1 })

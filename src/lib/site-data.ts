@@ -38,7 +38,7 @@ export const demoAgents: Agent[] = [
   {
     id: -2,
     ...adamProfile,
-    photoUrl: '/images/adam-mihai.jpg',
+    photoUrl: '/images/adam-mihai-portrait.jpg',
     createdAt: now,
     updatedAt: now,
   },
@@ -162,7 +162,7 @@ function mediaUrl(value: number | Media | null | undefined, size?: 'card' | 'thu
 
 const localPhotos: Record<string, string> = {
   [sebastianProfile.name]: '/images/sebastian-hepes.jpg',
-  [adamProfile.name]: '/images/adam-mihai.jpg',
+  [adamProfile.name]: '/images/adam-mihai-portrait.jpg',
 }
 
 function mapAgent(agent: TeamMember): Agent {

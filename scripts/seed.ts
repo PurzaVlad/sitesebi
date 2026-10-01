@@ -29,7 +29,7 @@ const [villa, apartment, penthouse, house, sebastianPhoto, adamPhoto] = await Pr
   upload('property-penthouse.jpg', 'Interior penthouse modern'),
   upload('property-house.jpg', 'Casă modernă de închiriat'),
   upload('sebastian-hepes.jpg', 'Sebastian Hepes'),
-  upload('adam-mihai.jpg', 'Adam Mihai'),
+  upload('adam-mihai-portrait.jpg', 'Adam Mihai'),
 ])
 
 payload.logger.info('Creez echipa agenției...')
