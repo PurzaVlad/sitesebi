@@ -31,14 +31,14 @@ export const demoAgents: Agent[] = [
   {
     id: -1,
     ...sebastianProfile,
-    photoUrl: '/images/sebastian-hepes.png',
+    photoUrl: '/images/sebastian-hepes.jpg',
     createdAt: now,
     updatedAt: now,
   },
   {
     id: -2,
     ...adamProfile,
-    photoUrl: '',
+    photoUrl: '/images/adam-mihai.jpg',
     createdAt: now,
     updatedAt: now,
   },
@@ -160,11 +160,16 @@ function mediaUrl(value: number | Media | null | undefined, size?: 'card' | 'thu
   return (size && value.sizes?.[size]?.url) || value.url || null
 }
 
+const localPhotos: Record<string, string> = {
+  [sebastianProfile.name]: '/images/sebastian-hepes.jpg',
+  [adamProfile.name]: '/images/adam-mihai.jpg',
+}
+
 function mapAgent(agent: TeamMember): Agent {
   return {
     ...agent,
     // Keep the portrait's original framing; square CMS thumbnails can crop the face.
-    photoUrl: mediaUrl(agent.photo) || (agent.name === 'Sebastian Hepes' ? '/images/sebastian-hepes.png' : ''),
+    photoUrl: mediaUrl(agent.photo) || localPhotos[agent.name] || '',
   }
 }
 

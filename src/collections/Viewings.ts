@@ -1,5 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
+import { notifyTeam } from '../lib/notifications'
+
 const isAdmin = ({ req }: { req: { user?: unknown } }) => Boolean(req.user)
 
 export const Viewings: CollectionConfig = {
@@ -15,6 +17,17 @@ export const Viewings: CollectionConfig = {
     read: isAdmin,
     update: isAdmin,
     delete: isAdmin,
+  },
+  hooks: {
+    afterChange: [
+      async ({ doc, operation, req }) => {
+        if (operation !== 'create') return
+        await notifyTeam(req.payload, {
+          subject: `Vizionare programată: ${doc.propertyTitle}, ${doc.date} ${doc.time}`,
+          rows: [['Proprietate', doc.propertyTitle], ['Data', doc.date], ['Ora', doc.time], ['Nume', doc.name], ['Telefon', doc.phone], ['E-mail', doc.email], ['Observații', doc.note]],
+        })
+      },
+    ],
   },
   fields: [
     {

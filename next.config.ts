@@ -8,6 +8,8 @@ const dirname = path.dirname(__filename)
 
 const nextConfig: NextConfig = {
   images: {
+    // Team portraits use a higher quality to stay sharp on retina screens.
+    qualities: [75, 90],
     localPatterns: [
       {
         pathname: '/images/**',

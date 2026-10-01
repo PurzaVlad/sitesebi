@@ -54,7 +54,7 @@ export default async function HomePage() {
 
       {sebastian && <section className="section consultant-section">
         <div className="container consultant-grid">
-          <div className="consultant-photo"><Image src={sebastian.photoUrl} alt="Sebastian Hepes, consultant imobiliar" fill sizes="(max-width: 800px) 100vw, 42vw" /></div>
+          <div className="consultant-photo"><Image src={sebastian.photoUrl} alt="Sebastian Hepes, consultant imobiliar" fill quality={90} sizes="(max-width: 800px) 100vw, 42vw" /></div>
           <div className="consultant-copy">
             <span className="eyebrow">Consultantul tău imobiliar</span>
             <h2>Sebastian Hepes</h2>
@@ -97,7 +97,7 @@ export default async function HomePage() {
           <div className="credit-slide__copy">
             <span className="eyebrow eyebrow--light">Credit imobiliar</span>
             <h2>Ai găsit locul.<br />Hai să clarificăm finanțarea.</h2>
-            <p>O analiză simplă, construită în jurul bugetului, avansului și planurilor tale.</p>
+            <p>Lucrăm în echipă cu un consultant financiar partener pentru credit ipotecar, refinanțare și împrumuturi bancare.</p>
           </div>
           <div className="credit-slide__action">
             <span><BadgeCheck size={17} /> Cerere fără obligații</span>

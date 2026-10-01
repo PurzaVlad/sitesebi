@@ -276,10 +276,11 @@ export interface CreditRequest {
   name: string;
   phone: string;
   email?: string | null;
-  purpose: 'purchase' | 'refinance' | 'other';
+  purpose: 'purchase' | 'refinance' | 'loan' | 'other';
   requestedAmount: number;
   downPayment?: number | null;
   monthlyIncome?: number | null;
+  notaryHelp?: boolean | null;
   message?: string | null;
   status?: ('new' | 'contacted' | 'review' | 'closed') | null;
   updatedAt: string;
@@ -541,6 +542,7 @@ export interface CreditRequestsSelect<T extends boolean = true> {
   requestedAmount?: T;
   downPayment?: T;
   monthlyIncome?: T;
+  notaryHelp?: T;
   message?: T;
   status?: T;
   updatedAt?: T;
@@ -619,6 +621,8 @@ export interface SiteSetting {
   heroSubtitle?: string | null;
   facebook?: string | null;
   instagram?: string | null;
+  creditPartnerName?: string | null;
+  creditPartnerEmail?: string | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -637,6 +641,8 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   heroSubtitle?: T;
   facebook?: T;
   instagram?: T;
+  creditPartnerName?: T;
+  creditPartnerEmail?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

@@ -23,18 +23,19 @@ if (existing.totalDocs > 0) {
 }
 
 payload.logger.info('Încarc imaginile demo...')
-const [villa, apartment, penthouse, house, sebastianPhoto] = await Promise.all([
+const [villa, apartment, penthouse, house, sebastianPhoto, adamPhoto] = await Promise.all([
   upload('property-villa.jpg', 'Vilă contemporană cu grădină'),
   upload('property-apartment.jpg', 'Interior apartament luminos'),
   upload('property-penthouse.jpg', 'Interior penthouse modern'),
   upload('property-house.jpg', 'Casă modernă de închiriat'),
-  upload('sebastian-hepes.png', 'Sebastian Hepes'),
+  upload('sebastian-hepes.jpg', 'Sebastian Hepes'),
+  upload('adam-mihai.jpg', 'Adam Mihai'),
 ])
 
 payload.logger.info('Creez echipa agenției...')
 const [sebastian, adam] = await Promise.all([
   payload.create({ collection: 'team-members', data: { ...sebastianProfile, photo: sebastianPhoto.id } }),
-  payload.create({ collection: 'team-members', data: adamProfile }),
+  payload.create({ collection: 'team-members', data: { ...adamProfile, photo: adamPhoto.id } }),
 ])
 await payload.updateGlobal({ slug: 'site-settings', data: agencyContact })
 

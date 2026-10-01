@@ -20,7 +20,7 @@ export async function POST(request: Request) {
   const phone = value(form, 'phone')
   const email = value(form, 'email')
   const rawPurpose = value(form, 'purpose')
-  const purpose = rawPurpose === 'refinance' || rawPurpose === 'other' ? rawPurpose : 'purchase'
+  const purpose = rawPurpose === 'refinance' || rawPurpose === 'loan' || rawPurpose === 'other' ? rawPurpose : 'purchase'
   const requestedAmount = numericValue(form, 'requestedAmount')
   const downPayment = numericValue(form, 'downPayment')
   const monthlyIncome = numericValue(form, 'monthlyIncome')
@@ -41,6 +41,7 @@ export async function POST(request: Request) {
       requestedAmount,
       downPayment,
       monthlyIncome,
+      notaryHelp: value(form, 'notaryHelp') === 'da',
       message: message || undefined,
     },
   })

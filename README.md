@@ -47,7 +47,7 @@ Site-ul este disponibil la `http://localhost:3000`. La prima accesare a `http://
 
 Datele demonstrative din cod sunt folosite doar dacă baza de date nu are încă proprietăți sau membri ai echipei. După popularea CMS-ului, site-ul citește exclusiv conținutul administrat.
 
-Pentru o bază de date populată cu vechiul demo, `node --import=tsx scripts/update-sebastian.ts` configurează Sebastian Hepes și Adam Mihai, telefoanele lor și e-mailul comun `lc.estate.solution@gmail.com`. Încarcă fotografia furnizată a lui Sebastian, păstrează relațiile cu proprietățile și dezactivează profilul demonstrativ Vlad Stan după realocarea proprietăților lui către Adam. Nu dublează profilurile sau fotografia la rulări repetate și păstrează ceilalți membri ai echipei. Datele comune se actualizează și în Setări site. Pentru Adam, site-ul afișează inițialele până la încărcarea unei fotografii reale în CMS.
+Pentru o bază de date populată cu vechiul demo, `node --import=tsx scripts/update-sebastian.ts` configurează Sebastian Hepes și Adam Mihai, telefoanele lor și e-mailul comun `lc.estate.solution@gmail.com`. Încarcă fotografiile furnizate ale lui Sebastian și Adam, păstrează relațiile cu proprietățile și dezactivează profilul demonstrativ Vlad Stan după realocarea proprietăților lui către Adam. Nu dublează profilurile sau fotografia la rulări repetate și păstrează ceilalți membri ai echipei. Datele comune se actualizează și în Setări site.
 
 ## Deploy cu Docker
 
@@ -81,8 +81,7 @@ CMS-ul necesită o bază de date persistentă externă; `file:./.db` funcționea
 În Vercel → Project → Environment Variables, configurează pentru Production și Preview:
 
 - `PAYLOAD_SECRET`: un secret lung, aleatoriu, nenul, păstrat stabil între deploy-uri;
-- `DATABASE_URL`: URL-ul bazei Turso, în format `libsql://...`;
-- `DATABASE_AUTH_TOKEN`: tokenul bazei Turso;
+- `TURSO_DATABASE_URL` și `TURSO_AUTH_TOKEN`: adăugate automat când conectezi baza Turso din Vercel → Storage (au prioritate față de `DATABASE_URL` / `DATABASE_AUTH_TOKEN`);
 - `NEXT_PUBLIC_SITE_URL`: `https://sitesebi-mocha.vercel.app` sau domeniul final;
 - `BLOB_READ_WRITE_TOKEN`: adăugat automat când conectezi un Blob store (vezi mai jos).
 
@@ -104,7 +103,7 @@ npm run payload migrate:create # creează o migrare nouă
 
 ## Înainte de publicare
 
-Confirmă datele de contact, textele, statisticile, fotografiile echipei și modelul politicii de confidențialitate înainte de publicare. Adaugă un serviciu de e-mail dacă vrei și notificări pe e-mail; solicitările sunt deja salvate în siguranță în CMS chiar fără acesta.
+Confirmă datele de contact, textele, statisticile, fotografiile echipei și modelul politicii de confidențialitate înainte de publicare. Notificările pe e-mail pentru solicitări, cereri de credit și vizionări se activează setând `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER` și `SMTP_PASS` (pentru Gmail: `smtp.gmail.com`, `465`, adresa și o parolă de aplicație). Mesajele merg la e-mailul din Setări site (sau `NOTIFY_EMAIL`), iar cererile de credit și la e-mailul consultantului partener din Setări site → Parteneriat credit. Fără aceste variabile, solicitările sunt salvate în continuare în CMS.
 
-Imaginea hero a fost generată special pentru acest proiect. Fotografia lui Sebastian Hepes este furnizată de client. Celelalte fotografii demo ale proprietăților și echipei provin de pe Unsplash și trebuie înlocuite cu materialele reale ale agenției.
+Imaginea hero a fost generată special pentru acest proiect. Fotografiile lui Sebastian Hepes și Adam Mihai sunt furnizate de client. Celelalte fotografii demo ale proprietăților și echipei provin de pe Unsplash și trebuie înlocuite cu materialele reale ale agenției.
 # sitesebi

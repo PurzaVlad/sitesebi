@@ -1,5 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
+import { notifyTeam } from '../lib/notifications'
+
 const isAdmin = ({ req }: { req: { user?: unknown } }) => Boolean(req.user)
 
 export const Leads: CollectionConfig = {
@@ -11,6 +13,18 @@ export const Leads: CollectionConfig = {
     read: isAdmin,
     update: isAdmin,
     delete: isAdmin,
+  },
+  hooks: {
+    afterChange: [
+      async ({ doc, operation, req }) => {
+        if (operation !== 'create') return
+        const sources: Record<string, string> = { contact: 'Formular contact', property: 'Pagină proprietate', valuation: 'Evaluare' }
+        await notifyTeam(req.payload, {
+          subject: `Solicitare nouă: ${doc.name}`,
+          rows: [['Nume', doc.name], ['Telefon', doc.phone], ['E-mail', doc.email], ['Sursă', sources[doc.source] || doc.source], ['Mesaj', doc.message]],
+        })
+      },
+    ],
   },
   fields: [
     { name: 'name', label: 'Nume', type: 'text', required: true },

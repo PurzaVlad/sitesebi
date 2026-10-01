@@ -39,5 +39,19 @@ export const SiteSettings: GlobalConfig = {
         { name: 'instagram', label: 'Instagram', type: 'text' },
       ],
     },
+    {
+      type: 'collapsible',
+      label: 'Parteneriat credit',
+      admin: { description: 'Consultantul financiar partener afișat pe pagina Credit. Cererile de credit îi sunt trimise și lui pe e-mail.' },
+      fields: [
+        {
+          type: 'row',
+          fields: [
+            { name: 'creditPartnerName', label: 'Nume consultant / firmă', type: 'text' },
+            { name: 'creditPartnerEmail', label: 'E-mail consultant', type: 'email' },
+          ],
+        },
+      ],
+    },
   ],
 }

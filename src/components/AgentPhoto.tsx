@@ -8,7 +8,7 @@ export function AgentPhoto({ name, src, className, sizes }: {
 }) {
   return (
     <div className={className}>
-      {src ? <Image src={src} alt={name} fill sizes={sizes} /> : (
+      {src ? <Image src={src} alt={name} fill sizes={sizes} quality={90} /> : (
         <span className="agent-photo__placeholder" aria-label={name}>
           {name.split(/\s+/).map((part) => part[0]).join('')}
         </span>
