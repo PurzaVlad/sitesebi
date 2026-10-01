@@ -6,11 +6,10 @@ import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { PropertyCard } from '@/components/PropertyCard'
 import { SearchFilters } from '@/components/SearchFilters'
-import { getAgents, getListings, getSettings } from '@/lib/site-data'
+import { getListings, getSettings } from '@/lib/site-data'
 
 export default async function HomePage() {
-  const [settings, listings, agents] = await Promise.all([getSettings(), getListings(), getAgents()])
-  const sebastian = agents.find((agent) => agent.name === 'Sebastian Hepes')
+  const [settings, listings] = await Promise.all([getSettings(), getListings()])
   const featured = listings.filter((property) => property.featured).slice(0, 3)
   const visibleListings = featured.length === 3 ? featured : listings.slice(0, 3)
 
@@ -52,27 +51,6 @@ export default async function HomePage() {
         <div className="container section-action"><Link className="button button--outline" href="/proprietati">Vezi toate proprietățile <ArrowRight size={18} /></Link></div>
       </section>
 
-      {sebastian && <section className="section consultant-section">
-        <div className="container consultant-grid">
-          <div className="consultant-photo"><Image src={sebastian.photoUrl} alt="Sebastian Hepes, consultant imobiliar" fill quality={90} sizes="(max-width: 800px) 100vw, 42vw" /></div>
-          <div className="consultant-copy">
-            <span className="eyebrow">Consultantul tău imobiliar</span>
-            <h2>Sebastian Hepes</h2>
-            <p className="consultant-role">{sebastian.role} · {settings.agencyName}</p>
-            <p>{sebastian.bio}</p>
-            <div className="consultant-services"><span>Cumpărare</span><span>Vânzare</span><span>Închiriere</span></div>
-            <div className="consultant-actions">
-              <Link className="button button--dark" href="/contact">Discută cu Sebastian <ArrowRight size={18} /></Link>
-              <a className="button button--outline" href={`tel:${(sebastian.phone || settings.phone || '').replace(/\s/g, '')}`}><Phone size={17} /> {sebastian.phone || settings.phone}</a>
-            </div>
-            <dl className="consultant-stats">
-              <div><dt>proprietăți tranzacționate</dt><dd>180+</dd></div>
-              <div><dt>clienți din recomandări</dt><dd>96%</dd></div>
-              <div><dt>evaluare medie clienți</dt><dd>4.9/5</dd></div>
-            </dl>
-          </div>
-        </div>
-      </section>}
 
       <section className="section process-section" id="servicii">
         <div className="container process-grid">
