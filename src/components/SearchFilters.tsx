@@ -30,7 +30,7 @@ const propertyTypes: Option[] = [
   { value: 'commercial', label: 'Spațiu comercial', detail: 'Birouri și spații comerciale' },
 ]
 
-const locations: Option[] = [
+const defaultLocations: Option[] = [
   { value: '', label: 'Timișoara + împrejurimi', detail: 'Toate zonele disponibile' },
   { value: 'Timișoara', label: 'Timișoara', detail: 'Oraș și cartiere' },
   { value: 'Dumbrăvița', label: 'Dumbrăvița', detail: 'Nordul orașului' },
@@ -110,7 +110,10 @@ function CustomDropdown({
   )
 }
 
-export function SearchFilters({ variant, initial = {} }: { variant: 'hero' | 'catalog'; initial?: FilterValues }) {
+export function SearchFilters({ variant, initial = {}, locations: available }: { variant: 'hero' | 'catalog'; initial?: FilterValues; locations?: Option[] }) {
+  const locations = available?.length
+    ? [{ value: '', label: 'Timișoara + împrejurimi', detail: 'Toate zonele disponibile' }, ...available]
+    : defaultLocations
   const [transaction, setTransaction] = useState(initial.tranzactie || 'sale')
   const [type, setType] = useState(initial.tip || '')
   const [location, setLocation] = useState(initial.zona || '')

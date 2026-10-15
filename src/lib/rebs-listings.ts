@@ -92,8 +92,29 @@ const placeNames: Record<string, string> = {
   bucovat: 'Bucovăț',
 }
 
+// Timișoara neighbourhoods, also stored without diacritics.
+const zoneNames: Record<string, string> = {
+  brancoveanu: 'Brâncoveanu',
+  cetatii: 'Cetății',
+  circumvalatiunii: 'Circumvalațiunii',
+  'calea sagului': 'Calea Șagului',
+  'complexul studentesc': 'Complexul Studențesc',
+  dambovita: 'Dâmbovița',
+  ronat: 'Ronaț',
+  'mircea cel batran': 'Mircea cel Bătrân',
+  'piata 700': 'Piața 700',
+  'piata victoriei': 'Piața Victoriei',
+  'stefan cel mare': 'Ștefan cel Mare',
+  sagului: 'Șagului',
+  buziasului: 'Buziașului',
+}
+
 function placeName(value: string) {
   return placeNames[value.trim().toLowerCase()] || value.trim()
+}
+
+function zoneName(value: string) {
+  return zoneNames[value.trim().toLowerCase()] || value.trim()
 }
 
 export function slugify(value: string) {
@@ -172,7 +193,7 @@ function buildListing(property: RebsProperty, transaction: 'sale' | 'rent', snap
   const floorLabel = labels('floors', property.floor_multi)
   const floor = floorLabel ? (property.building_floors ? `${floorLabel} / ${property.building_floors}` : floorLabel) : null
   const city = placeName(property.city || '')
-  const zone = property.zone ? snapshot.zones[property.zone] : null
+  const zone = property.zone && snapshot.zones[property.zone] ? zoneName(snapshot.zones[property.zone]) : null
   const location = [zone, city].filter(Boolean).join(', ')
   const landArea = landSquareMeters(property)
   const subtype = label('apartment_type', apartmentType) || label('house_type', property.house_type)
@@ -289,6 +310,8 @@ function buildListing(property: RebsProperty, transaction: 'sale' | 'rent', snap
     price,
     currency,
     location,
+    city: city || null,
+    zone,
     shortDescription: summary(description),
     description,
     area: property.surface_useable,

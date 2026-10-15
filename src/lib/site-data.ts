@@ -13,6 +13,9 @@ export type Listing = Omit<Property, 'images' | 'agent' | 'currency'> & {
   currency?: 'EUR' | 'RON' | 'USD' | null
   /** Public reference shown on the page, e.g. CP3456893 from REBS. */
   reference: string
+  /** Locality and, inside Timișoara, the neighbourhood; they feed the location filter. */
+  city?: string | null
+  zone?: string | null
   cover: string
   gallery: string[]
   agent?: Agent | null
@@ -305,6 +308,47 @@ export function formatPricePerArea(property: Pick<Listing, 'price' | 'currency' 
   if (property.transaction !== 'sale' || !property.area) return null
   const formatted = new Intl.NumberFormat('ro-RO').format(Math.round(property.price / property.area))
   return `${formatted} ${currencySymbol(property.currency)} / m²`
+}
+
+export type LocationOption = { value: string; label: string; detail?: string }
+
+const plainText = (value: string) => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim()
+
+// Listings without explicit city/zone (CMS or demo data) use "Zonă, Localitate" from the location text.
+function placeOf(listing: Listing) {
+  if (listing.city) return { city: listing.city, zone: listing.zone || null }
+  const parts = listing.location.split(',').map((part) => part.trim()).filter(Boolean)
+  const last = parts[parts.length - 1] || ''
+  // "Dumbrăvița, Timiș" names the county last; "Cetate, Timișoara" names a neighbourhood first.
+  if (/^timi[sș]$/i.test(last)) return { city: parts[0], zone: null }
+  return { city: last, zone: parts.length > 1 ? parts[0] : null }
+}
+
+export function matchesLocation(listing: Listing, value: string) {
+  const wanted = plainText(value)
+  const { city, zone } = placeOf(listing)
+  return plainText(city) === wanted || (zone ? plainText(zone) === wanted : false)
+}
+
+const countLabel = (count: number) => `${count} ${count === 1 ? 'proprietate' : 'proprietăți'}`
+
+// Timișoara is split into its neighbourhoods; every other locality is one option.
+export function getLocationOptions(listings: Listing[]): LocationOption[] {
+  const cities = new Map<string, number>()
+  const zones = new Map<string, number>()
+  for (const listing of listings) {
+    const { city, zone } = placeOf(listing)
+    if (!city) continue
+    cities.set(city, (cities.get(city) || 0) + 1)
+    if (zone && plainText(city) === 'timisoara') zones.set(zone, (zones.get(zone) || 0) + 1)
+  }
+  const byName = (a: [string, number], b: [string, number]) => a[0].localeCompare(b[0], 'ro')
+  const timisoara = [...cities].find(([city]) => plainText(city) === 'timisoara')
+  return [
+    ...(timisoara ? [{ value: timisoara[0], label: 'Timișoara', detail: `Toate zonele · ${countLabel(timisoara[1])}` }] : []),
+    ...[...zones].sort(byName).map(([zone, count]) => ({ value: zone, label: zone, detail: `Timișoara · ${countLabel(count)}` })),
+    ...[...cities].filter(([city]) => city !== timisoara?.[0]).sort(byName).map(([city, count]) => ({ value: city, label: city, detail: `Împrejurimi · ${countLabel(count)}` })),
+  ]
 }
 
 export function getSimilarListings(listings: Listing[], property: Listing, count = 3) {

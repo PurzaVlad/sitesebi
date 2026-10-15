@@ -6,7 +6,7 @@ import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { PropertyCard } from '@/components/PropertyCard'
 import { SearchFilters } from '@/components/SearchFilters'
-import { getListings, getSettings } from '@/lib/site-data'
+import { getListings, getLocationOptions, getSettings } from '@/lib/site-data'
 
 export default async function HomePage() {
   const [settings, listings] = await Promise.all([getSettings(), getListings()])
@@ -28,7 +28,7 @@ export default async function HomePage() {
             <Link className="text-link text-link--light" href="/contact?tip=evaluare">Vreau să vând o proprietate</Link>
           </div>
         </div>
-        <div className="hero-search-wrap container"><SearchFilters variant="hero" /></div>
+        <div className="hero-search-wrap container"><SearchFilters variant="hero" locations={getLocationOptions(listings)} /></div>
         <nav className="container property-types" aria-label="Caută după tipul proprietății">
           <Link href="/proprietati?tip=apartment"><Building2 /><span>Apartamente</span></Link>
           <Link href="/proprietati?tip=house"><Home /><span>Case / Vile</span></Link>

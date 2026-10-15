@@ -6,7 +6,7 @@ import { Header } from '@/components/Header'
 import { PropertyCard } from '@/components/PropertyCard'
 import { SearchFilters } from '@/components/SearchFilters'
 import { SortSelect } from '@/components/SortSelect'
-import { getListings, getSettings } from '@/lib/site-data'
+import { getListings, getLocationOptions, getSettings, matchesLocation } from '@/lib/site-data'
 
 export const metadata = { title: 'Proprietăți' }
 
@@ -15,8 +15,7 @@ type SearchParams = Promise<{ tranzactie?: string; tip?: string; zona?: string; 
 export default async function PropertiesPage({ searchParams }: { searchParams: SearchParams }) {
   const params = await searchParams
   const [settings, listings] = await Promise.all([getSettings(), getListings()])
-  const plain = (value: string) => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
-  const zone = plain(params.zona || '')
+  const zone = params.zona || ''
   const parsedMax = Number(params.pret)
   const maxPrice = params.pret && Number.isFinite(parsedMax) && parsedMax >= 0 ? parsedMax : Infinity
   const minPrice = Math.max(0, Number(params.pretMin) || 0)
@@ -24,7 +23,7 @@ export default async function PropertiesPage({ searchParams }: { searchParams: S
   const filtered = listings.filter((property) =>
     property.transaction === transaction &&
     (!params.tip || property.propertyType === params.tip) &&
-    (!zone || plain(property.location).includes(zone)) &&
+    (!zone || matchesLocation(property, zone)) &&
     property.price >= minPrice && property.price <= maxPrice,
   )
   if (params.sort === 'pret-asc') filtered.sort((a, b) => a.price - b.price)
@@ -39,7 +38,7 @@ export default async function PropertiesPage({ searchParams }: { searchParams: S
       </section>
       <section className="listing-section">
         <div className="container">
-          <SearchFilters variant="catalog" initial={params} />
+          <SearchFilters variant="catalog" initial={params} locations={getLocationOptions(listings)} />
           <div className="listing-results"><p><strong>{filtered.length}</strong> {filtered.length === 1 ? 'proprietate găsită' : 'proprietăți găsite'} {transaction === 'rent' ? 'de închiriat' : 'de vânzare'}</p>{filtered.length > 1 && <SortSelect params={params} />}</div>
           {filtered.length ? <div className="property-grid property-grid--catalog">{filtered.map((property) => <PropertyCard property={property} key={property.id} />)}</div> : <div className="empty-state"><Search size={30} /><h2>N-am găsit o potrivire exactă.</h2><p>Încearcă să elimini un filtru sau spune-ne direct ce cauți. Multe proprietăți ajung la noi înainte să fie publicate.</p><div className="empty-state__actions"><Link className="button button--outline" href={`/proprietati?tranzactie=${transaction}`}>Șterge filtrele</Link><Link className="button button--dark" href="/contact">Trimite-ne cerințele</Link></div></div>}
         </div>
