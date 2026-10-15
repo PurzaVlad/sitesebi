@@ -1,7 +1,9 @@
-import { NextResponse } from 'next/server'
+import { after, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 
 import config from '@/payload.config'
+import { rebsEnabled } from '@/lib/rebs'
+import { pushCreditToRebs, syncToRebs } from '@/lib/rebs-leads'
 
 function value(form: FormData, key: string) {
   return String(form.get(key) || '').trim()
@@ -31,7 +33,7 @@ export async function POST(request: Request) {
   }
 
   const payload = await getPayload({ config })
-  await payload.create({
+  const creditRequest = await payload.create({
     collection: 'credit-requests',
     data: {
       name,
@@ -45,6 +47,19 @@ export async function POST(request: Request) {
       message: message || undefined,
     },
   })
+
+  if (rebsEnabled) {
+    const purposes = { purchase: 'Credit ipotecar', refinance: 'Refinanțare', loan: 'Împrumut bancar', other: 'Alt scop' }
+    const summary = [
+      ['Tip', purposes[purpose]], ['Suma dorită', `${requestedAmount} €`], ['Avans', downPayment != null ? `${downPayment} €` : null],
+      ['Venit net lunar', monthlyIncome != null ? `${monthlyIncome} lei` : null], ['Sprijin notar', value(form, 'notaryHelp') === 'da' ? 'Da' : 'Nu'],
+      ['Detalii', message], ['Telefon', phone], ['E-mail', email],
+    ].filter(([, text]) => text).map(([label, text]) => `${label}: ${text}`).join('\n')
+    after(async () => {
+      const crmStatus = await syncToRebs(() => pushCreditToRebs({ name, phone, email, summary }))
+      await payload.update({ collection: 'credit-requests', id: creditRequest.id, data: { crmStatus } })
+    })
+  }
 
   return NextResponse.redirect(new URL('/credit?trimis=da', request.url), 303)
 }

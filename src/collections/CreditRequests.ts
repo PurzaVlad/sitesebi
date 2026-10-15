@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { notifyTeam } from '../lib/notifications'
+import { crmStatusField } from './crmFields'
 
 const isAdmin = ({ req }: { req: { user?: unknown } }) => Boolean(req.user)
 
@@ -71,5 +72,6 @@ export const CreditRequests: CollectionConfig = {
       ],
       access: { create: isAdmin, read: isAdmin, update: isAdmin },
     },
+    crmStatusField,
   ],
 }

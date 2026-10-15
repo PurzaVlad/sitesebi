@@ -15,7 +15,8 @@ type SearchParams = Promise<{ tranzactie?: string; tip?: string; zona?: string; 
 export default async function PropertiesPage({ searchParams }: { searchParams: SearchParams }) {
   const params = await searchParams
   const [settings, listings] = await Promise.all([getSettings(), getListings()])
-  const zone = (params.zona || '').toLocaleLowerCase('ro')
+  const plain = (value: string) => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+  const zone = plain(params.zona || '')
   const parsedMax = Number(params.pret)
   const maxPrice = params.pret && Number.isFinite(parsedMax) && parsedMax >= 0 ? parsedMax : Infinity
   const minPrice = Math.max(0, Number(params.pretMin) || 0)
@@ -23,7 +24,7 @@ export default async function PropertiesPage({ searchParams }: { searchParams: S
   const filtered = listings.filter((property) =>
     property.transaction === transaction &&
     (!params.tip || property.propertyType === params.tip) &&
-    (!zone || property.location.toLocaleLowerCase('ro').includes(zone)) &&
+    (!zone || plain(property.location).includes(zone)) &&
     property.price >= minPrice && property.price <= maxPrice,
   )
   if (params.sort === 'pret-asc') filtered.sort((a, b) => a.price - b.price)

@@ -4,6 +4,7 @@ import * as migration_20260831_134139 from './20260831_134139';
 import * as migration_20260831_140033_credit_requests from './20260831_140033_credit_requests';
 import * as migration_20260930_152958_properties_drafts from './20260930_152958_properties_drafts';
 import * as migration_20261001_152725_credit_partner from './20261001_152725_credit_partner';
+import * as migration_20261015_124520_rebs_sync from './20261015_124520_rebs_sync';
 
 export const migrations = [
   {
@@ -34,6 +35,11 @@ export const migrations = [
   {
     up: migration_20261001_152725_credit_partner.up,
     down: migration_20261001_152725_credit_partner.down,
-    name: '20261001_152725_credit_partner'
+    name: '20261001_152725_credit_partner',
+  },
+  {
+    up: migration_20261015_124520_rebs_sync.up,
+    down: migration_20261015_124520_rebs_sync.down,
+    name: '20261015_124520_rebs_sync'
   },
 ];

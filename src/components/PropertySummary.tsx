@@ -21,7 +21,7 @@ export function PropertySummary({ property }: { property: Listing }) {
           <div className="property-summary__price"><strong>{formatPrice(property)}</strong>{formatPricePerArea(property) && <small>{formatPricePerArea(property)}</small>}</div>
         </div>
         <p className="property-summary__location"><MapPin size={17} />{property.location}</p>
-        <p className="property-summary__id">ID: LC-{String(Math.abs(property.id)).padStart(4, '0')}</p>
+        <p className="property-summary__id">ID: {property.reference}</p>
         <dl className="property-summary__facts">
           {property.rooms != null && <div><BedDouble aria-hidden="true" /><dt>Camere</dt><dd>{property.rooms}<span>{property.rooms === 1 ? 'Cameră' : 'Camere'}</span></dd></div>}
           {property.bathrooms != null && <div><Bath aria-hidden="true" /><dt>Băi</dt><dd>{property.bathrooms}<span>{property.bathrooms === 1 ? 'Baie' : 'Băi'}</span></dd></div>}

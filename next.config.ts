@@ -10,6 +10,10 @@ const nextConfig: NextConfig = {
   images: {
     // Team portraits use a higher quality to stay sharp on retina screens.
     qualities: [75, 90],
+    // Listing photos are served by the REBS CRM.
+    remotePatterns: [
+      { protocol: 'https', hostname: 'media.crmrebs.com', pathname: '/**' },
+    ],
     localPatterns: [
       {
         pathname: '/images/**',

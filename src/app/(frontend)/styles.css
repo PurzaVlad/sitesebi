@@ -290,6 +290,17 @@ h3 { letter-spacing: -.01em; line-height: 1.3; }
 .features { padding-top: 42px; }
 .features > div { display: grid; grid-template-columns: repeat(2, 1fr); gap: 13px; }
 .features span { display: flex; align-items: center; gap: 9px; font-size: 14px; }
+.property-media-links { display: flex; flex-wrap: wrap; gap: 12px; padding-top: 30px; }
+.property-specs { padding-top: 42px; border-bottom: 1px solid var(--line); padding-bottom: 42px; }
+.property-specs h2 { margin: 0 0 20px; }
+.property-specs section + section { margin-top: 28px; }
+.property-specs h3, .features--grouped h3 { margin: 0 0 12px; color: var(--muted); font-family: var(--font-sans); font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.property-specs dl { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 36px; margin: 0; }
+.property-specs dl > div { display: flex; justify-content: space-between; gap: 16px; padding: 11px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
+.property-specs dt { color: var(--muted); }
+.property-specs dd { margin: 0; font-weight: 600; text-align: right; }
+.features--grouped section + section { margin-top: 26px; }
+.features--grouped section > div { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px 13px; }
 .agent-card__person { display: flex; align-items: center; gap: 13px; margin: 24px 0; }
 .agent-card__person strong, .agent-card__person span { display: block; }
 .agent-card__person span { color: var(--muted); font-size: 14px; }
@@ -355,7 +366,9 @@ h3 { letter-spacing: -.01em; line-height: 1.3; }
 .agent-card__avatar .agent-photo__placeholder { font-size: 20px; }
 .agent-card { padding: 32px; position: sticky; border: 1px solid var(--line); background: #fff; box-shadow: var(--shadow-card); top: 104px; border-radius: var(--radius-panel); }
 .gallery-grid__item { position: relative; overflow: hidden; background: var(--cream); padding: 0; border: 0; cursor: zoom-in; border-radius: var(--radius-panel); }
-.facts-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; border: 1px solid var(--line); background: var(--line); overflow: hidden; border-radius: var(--radius-panel); }
+/* Cell edges are drawn with shadows so a short last row leaves white space instead of a grey block. */
+.facts-grid { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--line); background: var(--paper); overflow: hidden; border-radius: var(--radius-panel); }
+.facts-grid > div { box-shadow: 1px 0 0 var(--line), 0 1px 0 var(--line); }
 .property-summary h1, .team-card__copy h2, .legal-page h2 { font-size: var(--fs-title); line-height: 1.2; }
 .property-summary h1 { max-width: 840px; margin: 0; color: #fff; font-weight: 400; letter-spacing: -.02em; }
 
@@ -621,6 +634,8 @@ h3 { letter-spacing: -.01em; line-height: 1.3; }
   .gallery-grid__item--1 { grid-column: 1 / 3; grid-row: 1; }
   .facts-grid { grid-template-columns: repeat(2, 1fr); }
   .features > div { grid-template-columns: 1fr; }
+  .property-specs dl { grid-template-columns: 1fr; }
+  .features--grouped section > div { grid-template-columns: 1fr 1fr; }
   .property-summary__inner { padding-block: 30px; }
   .property-summary__location { margin-top: 19px; }
   .property-summary__facts { gap: 22px 12px; }

@@ -1,5 +1,7 @@
 import type { CollectionConfig, Where } from 'payload'
 
+import { rebsEnabled } from '../lib/rebs'
+
 const isAdmin = ({ req }: { req: { user?: unknown } }) => Boolean(req.user)
 
 // Listings saved before drafts existed have no status and count as published.
@@ -19,6 +21,8 @@ export const Properties: CollectionConfig = {
     useAsTitle: 'title',
     defaultColumns: ['title', 'transaction', 'price', 'location', 'status'],
     group: 'Conținut',
+    // Listings come from the REBS CRM once it is connected, so the editor is only kept as a fallback.
+    hidden: rebsEnabled,
     // "Preview" opens the listing in draft mode; the preview route checks the admin session.
     preview: (doc) => (doc?.slug ? previewPath(String(doc.slug)) : null),
     livePreview: {

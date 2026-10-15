@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowRight, Bath, BedDouble, Calendar, CalendarDays, Check, Maximize2, MessageCircle, Phone, Ruler, Zap } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Bath, BedDouble, Calendar, CalendarDays, Check, Maximize2, MessageCircle, Phone, CirclePlay, Rotate3d, Ruler, Zap } from 'lucide-react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -10,7 +10,7 @@ import { PropertyCard } from '@/components/PropertyCard'
 import { PropertyGallery } from '@/components/PropertyGallery'
 import { PropertySummary } from '@/components/PropertySummary'
 import { ViewingScheduler } from '@/components/ViewingScheduler'
-import { getListings, getSettings, getSimilarListings } from '@/lib/site-data'
+import { findListing, getListings, getSettings, getSimilarListings } from '@/lib/site-data'
 
 function getViewingDates() {
   const dates: { value: string; weekday: string; day: string; month: string }[] = []
@@ -33,7 +33,7 @@ function getViewingDates() {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
-  const property = (await getListings()).find((item) => item.slug === slug)
+  const property = findListing(await getListings(), slug)
   return property
     ? { title: property.title, description: property.shortDescription, openGraph: { title: property.title, description: property.shortDescription || undefined, images: [property.cover] } }
     : { title: 'Proprietate' }
@@ -42,7 +42,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function PropertyPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const [settings, listings] = await Promise.all([getSettings(), getListings()])
-  const property = listings.find((item) => item.slug === slug)
+  const property = findListing(listings, slug)
   if (!property) notFound()
   const agent = property.agent
   const viewingDates = getViewingDates()
@@ -51,7 +51,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ slug:
   const phoneHref = `tel:${phone.replace(/\s/g, '')}`
   const propertyUrl = `${process.env.NEXT_PUBLIC_SITE_URL || ''}/proprietati/${property.slug}`
   const whatsappHref = settings.whatsapp
-    ? `https://wa.me/${settings.whatsapp}?text=${encodeURIComponent(`Bună ziua, mă interesează proprietatea „${property.title}” (LC-${String(Math.abs(property.id)).padStart(4, '0')}). ${propertyUrl}`)}`
+    ? `https://wa.me/${settings.whatsapp}?text=${encodeURIComponent(`Bună ziua, mă interesează proprietatea „${property.title}” (${property.reference}). ${propertyUrl}`)}`
     : null
 
   return (
@@ -72,8 +72,14 @@ export default async function PropertyPage({ params }: { params: Promise<{ slug:
                 {property.yearBuilt && <div><Calendar /><span>An</span><strong>{property.yearBuilt}</strong></div>}
                 {property.energyClass && <div><Zap /><span>Clasă energie</span><strong>{property.energyClass}</strong></div>}
               </div>
-              <div className="property-copy"><span className="eyebrow">Despre proprietate</span><h2>Un loc gândit pentru viața de zi cu zi.</h2><p>{property.description}</p></div>
-              {!!property.features?.length && <div className="features"><h2>Dotări și avantaje</h2><div>{property.features.map((item) => <span key={item.id || item.feature}><Check size={17} />{item.feature}</span>)}</div></div>}
+              <div className="property-copy"><span className="eyebrow">Despre proprietate</span><h2>{property.crm ? 'Descriere' : 'Un loc gândit pentru viața de zi cu zi.'}</h2><p>{property.description}</p></div>
+              {(property.videoUrl || property.virtualTourUrl) && <div className="property-media-links">
+                {property.videoUrl && <a className="button button--outline" href={property.videoUrl} target="_blank" rel="noreferrer">Vezi video<CirclePlay size={17} /></a>}
+                {property.virtualTourUrl && <a className="button button--outline" href={property.virtualTourUrl} target="_blank" rel="noreferrer">Tur virtual<Rotate3d size={17} /></a>}
+              </div>}
+              {!!property.detailGroups?.length && <div className="property-specs"><h2>Caracteristici</h2>{property.detailGroups.map((group) => <section key={group.title}><h3>{group.title}</h3><dl>{group.rows.map((row) => <div key={row.label}><dt>{row.label}</dt><dd>{row.value}</dd></div>)}</dl></section>)}</div>}
+              {property.featureGroups?.length ? <div className="features features--grouped"><h2>Dotări și utilități</h2>{property.featureGroups.map((group) => <section key={group.title}><h3>{group.title}</h3><div>{group.items.map((item) => <span key={item}><Check size={17} />{item}</span>)}</div></section>)}</div>
+                : !!property.features?.length && <div className="features"><h2>Dotări și avantaje</h2><div>{property.features.map((item) => <span key={item.id || item.feature}><Check size={17} />{item.feature}</span>)}</div></div>}
             </div>
             <aside className="agent-card" id="vizionare">
               <span className="eyebrow">Programează o vizionare</span>
@@ -83,7 +89,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ slug:
               <a className="button button--dark" href={phoneHref}>{phone}<Phone size={17} /></a>
               {whatsappHref && <a className="button button--outline" href={whatsappHref} target="_blank" rel="noreferrer">Scrie pe WhatsApp<MessageCircle size={17} /></a>}
               <Link className="text-link agent-card__message" href={`/contact?proprietate=${encodeURIComponent(property.title)}&id=${property.id}`}>Preferi e-mailul? Trimite un mesaj</Link>
-              <small>ID proprietate: LC-{String(Math.abs(property.id)).padStart(4, '0')}</small>
+              <small>ID proprietate: {property.reference}</small>
             </aside>
           </div>
         </div>

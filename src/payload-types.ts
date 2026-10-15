@@ -264,6 +264,11 @@ export interface Lead {
   property?: (number | null) | Property;
   source?: ('contact' | 'property' | 'valuation') | null;
   status?: ('new' | 'contacted' | 'closed') | null;
+  crmPropertyId?: number | null;
+  /**
+   * Ce s-a creat în CRM pentru această solicitare.
+   */
+  crmStatus?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -283,6 +288,10 @@ export interface CreditRequest {
   notaryHelp?: boolean | null;
   message?: string | null;
   status?: ('new' | 'contacted' | 'review' | 'closed') | null;
+  /**
+   * Ce s-a creat în CRM pentru această solicitare.
+   */
+  crmStatus?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -301,6 +310,11 @@ export interface Viewing {
   email?: string | null;
   note?: string | null;
   status?: ('scheduled' | 'confirmed' | 'completed' | 'cancelled') | null;
+  crmPropertyId?: number | null;
+  /**
+   * Ce s-a creat în CRM pentru această solicitare.
+   */
+  crmStatus?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -527,6 +541,8 @@ export interface LeadsSelect<T extends boolean = true> {
   property?: T;
   source?: T;
   status?: T;
+  crmPropertyId?: T;
+  crmStatus?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -545,6 +561,7 @@ export interface CreditRequestsSelect<T extends boolean = true> {
   notaryHelp?: T;
   message?: T;
   status?: T;
+  crmStatus?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -562,6 +579,8 @@ export interface ViewingsSelect<T extends boolean = true> {
   email?: T;
   note?: T;
   status?: T;
+  crmPropertyId?: T;
+  crmStatus?: T;
   updatedAt?: T;
   createdAt?: T;
 }

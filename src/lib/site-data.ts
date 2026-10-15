@@ -6,11 +6,22 @@ import type { Media, Property, SiteSetting, TeamMember } from '@/payload-types'
 import { publishedOnly } from '@/collections/Properties'
 import config from '@/payload.config'
 import { adamProfile, agencyContact, sebastianProfile } from './agency'
+import { rebsEnabled } from './rebs'
+import { loadRebsListings } from './rebs-listings'
 
-export type Listing = Omit<Property, 'images' | 'agent'> & {
+export type Listing = Omit<Property, 'images' | 'agent' | 'currency'> & {
+  currency?: 'EUR' | 'RON' | 'USD' | null
+  /** Public reference shown on the page, e.g. CP3456893 from REBS. */
+  reference: string
   cover: string
   gallery: string[]
   agent?: Agent | null
+  detailGroups?: { title: string; rows: { label: string; value: string }[] }[]
+  featureGroups?: { title: string; items: string[] }[]
+  videoUrl?: string | null
+  virtualTourUrl?: string | null
+  /** Set for listings that come from the REBS CRM; used to link viewings and leads back to it. */
+  crm?: { propertyId: number; agentId: number | null; propertyType: number }
 }
 
 export type Agent = Omit<TeamMember, 'photo'> & { photoUrl: string }
@@ -44,7 +55,7 @@ export const demoAgents: Agent[] = [
   },
 ]
 
-export const demoListings: Listing[] = [
+const demoListingData: Omit<Listing, 'reference'>[] = [
   {
     id: -1,
     title: 'Vilă contemporană cu grădină matură',
@@ -155,6 +166,10 @@ export const demoListings: Listing[] = [
   },
 ]
 
+const localReference = (id: number) => `LC-${String(Math.abs(id)).padStart(4, '0')}`
+
+export const demoListings: Listing[] = demoListingData.map((listing) => ({ ...listing, reference: localReference(listing.id) }))
+
 function mediaUrl(value: number | Media | null | undefined, size?: 'card' | 'thumbnail') {
   if (!value || typeof value === 'number') return null
   return (size && value.sizes?.[size]?.url) || value.url || null
@@ -180,6 +195,7 @@ function mapProperty(property: Property): Listing {
 
   return {
     ...property,
+    reference: localReference(property.id),
     cover: (property.images || []).map((image) => mediaUrl(image, 'card')).find(Boolean) || gallery[0] || '/images/property-villa.jpg',
     gallery: gallery.length ? gallery : ['/images/property-villa.jpg'],
     agent: property.agent && typeof property.agent === 'object' ? mapAgent(property.agent) : null,
@@ -215,10 +231,47 @@ async function loadListings(draft: boolean) {
 
 const getPublishedListings = unstable_cache(() => loadListings(false), ['properties'], { revalidate: 30 })
 
+const phoneKey = (phone?: string | null) => (phone || '').replace(/\D/g, '').slice(-9)
+
+// Prefer the site's own team profile (curated photo and bio) for the agent REBS assigns.
+function withTeamProfile(agent: Agent | null | undefined, team: Agent[]) {
+  if (!agent) return agent
+  const local = team.find((member) =>
+    (phoneKey(member.phone) && phoneKey(member.phone) === phoneKey(agent.phone)) ||
+    member.name.localeCompare(agent.name, 'ro', { sensitivity: 'base' }) === 0)
+  return local ? { ...local, phone: agent.phone || local.phone } : agent
+}
+
+// The last good CRM copy, so a REBS outage never empties the site.
+let lastRebsListings: Listing[] | null = null
+
+async function getRebsListings() {
+  try {
+    const [listings, team] = await Promise.all([loadRebsListings(), getAgents()])
+    lastRebsListings = listings.map((listing) => ({ ...listing, agent: withTeamProfile(listing.agent, team) }))
+  } catch (error) {
+    console.error('[REBS] Proprietățile nu au putut fi încărcate:', error)
+  }
+  return lastRebsListings || []
+}
+
 // Draft mode is only enabled through /api/preview, which requires an admin session.
 export async function getListings() {
+  // Reading draft mode also keeps listing pages dynamic, so they always reflect the latest cached CRM data.
   const { isEnabled } = await draftMode()
+  if (rebsEnabled) return getRebsListings()
   return isEnabled ? loadListings(true) : getPublishedListings()
+}
+
+// Old links keep working after a title change, because the CRM reference ends every slug.
+export function findListing(listings: Listing[], slug: string) {
+  const exact = listings.find((item) => item.slug === slug)
+  if (exact) return exact
+  const reference = slug.match(/-(cp\d+)(-inchiriere)?$/i)
+  if (!reference) return undefined
+  const rent = Boolean(reference[2])
+  return listings.find((item) => item.reference.toLowerCase() === reference[1].toLowerCase() && (item.transaction === 'rent') === rent)
+    || listings.find((item) => item.reference.toLowerCase() === reference[1].toLowerCase())
 }
 
 export const getAgents = unstable_cache(async () => {
@@ -240,16 +293,18 @@ export const getAgents = unstable_cache(async () => {
   }
 }, ['team-members'], { revalidate: 60 })
 
+const currencySymbol = (currency: Listing['currency']) => (currency === 'RON' ? 'lei' : currency === 'USD' ? '$' : '€')
+
 export function formatPrice(property: Pick<Listing, 'price' | 'currency' | 'transaction'>) {
   const formatted = new Intl.NumberFormat('ro-RO').format(property.price)
   const suffix = property.transaction === 'rent' ? ' / lună' : ''
-  return `${formatted} ${property.currency === 'RON' ? 'lei' : '€'}${suffix}`
+  return `${formatted} ${currencySymbol(property.currency)}${suffix}`
 }
 
 export function formatPricePerArea(property: Pick<Listing, 'price' | 'currency' | 'transaction' | 'area'>) {
   if (property.transaction !== 'sale' || !property.area) return null
   const formatted = new Intl.NumberFormat('ro-RO').format(Math.round(property.price / property.area))
-  return `${formatted} ${property.currency === 'RON' ? 'lei' : '€'} / m²`
+  return `${formatted} ${currencySymbol(property.currency)} / m²`
 }
 
 export function getSimilarListings(listings: Listing[], property: Listing, count = 3) {

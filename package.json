@@ -12,6 +12,7 @@
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
     "lint": "cross-env NODE_OPTIONS=--no-deprecation eslint .",
     "seed": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/seed.ts",
+    "rebs:webhook": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/rebs-webhook.ts",
     "migrate": "cross-env NODE_OPTIONS=--no-deprecation payload migrate",
     "start:prod": "npm run migrate && npm run start",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
